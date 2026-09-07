@@ -9,6 +9,7 @@ import AddCustomerModal from "./components/AddCustomerModal";
 
 export default function SellPage() {
   const [items, setItems] = React.useState([]);
+  const [totalSellAmount, setTotalSellAmount] = React.useState(0);
   const [customers, setCustomers] = React.useState([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [apiError, setApiError] = React.useState("");
@@ -44,6 +45,7 @@ export default function SellPage() {
     try {
       const data = await sellApi.getAll();
       setItems(data.items || []);
+      setTotalSellAmount(Number(data.totalSellAmount || 0));
     } catch (error) {
       setApiError(
         error.response?.data?.message || "Unable to load sell orders.",
@@ -58,7 +60,10 @@ export default function SellPage() {
     sellApi
       .getAll()
       .then((data) => {
-        if (active) setItems(data.items || []);
+        if (active) {
+          setItems(data.items || []);
+          setTotalSellAmount(Number(data.totalSellAmount || 0));
+        }
       })
       .catch((error) => {
         if (active)
@@ -77,7 +82,9 @@ export default function SellPage() {
     customerApi
       .getAll()
       .then((data) => {
-        const names = (data.items || []).map((item) => item.name).filter(Boolean);
+        const names = (data.items || [])
+          .map((item) => item.name)
+          .filter(Boolean);
         setCustomers(names);
         if (names.length > 0) {
           setSelectedCustomer((prev) => (prev ? prev : names[0]));
@@ -163,7 +170,10 @@ export default function SellPage() {
 
   return (
     <div className="space-y-6">
-      <SellHeader onAddCustomer={() => setIsCustomerModalOpen(true)} />
+      <SellHeader
+        totalSellAmount={totalSellAmount}
+        onAddCustomer={() => setIsCustomerModalOpen(true)}
+      />
       <SellForm
         date={date}
         setDate={setDate}

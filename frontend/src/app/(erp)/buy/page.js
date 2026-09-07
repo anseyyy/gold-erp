@@ -9,6 +9,7 @@ import AddCustomerModal from "./components/AddCustomerModal";
 
 export default function BuyPage() {
   const [items, setItems] = React.useState([]);
+  const [totalBuyAmount, setTotalBuyAmount] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(true);
   const [apiError, setApiError] = React.useState("");
   const [date, setDate] = React.useState(new Date().toISOString().slice(0, 10));
@@ -46,6 +47,7 @@ export default function BuyPage() {
     try {
       const data = await buyApi.getAll();
       setItems(data.items || []);
+      setTotalBuyAmount(Number(data.totalBuyAmount || 0));
     } catch (error) {
       setApiError(
         error.response?.data?.message || "Unable to load buy orders.",
@@ -60,7 +62,10 @@ export default function BuyPage() {
     buyApi
       .getAll()
       .then((data) => {
-        if (active) setItems(data.items || []);
+        if (active) {
+          setItems(data.items || []);
+          setTotalBuyAmount(Number(data.totalBuyAmount || 0));
+        }
       })
       .catch((error) => {
         if (active)
@@ -80,7 +85,9 @@ export default function BuyPage() {
     customerApi
       .getAll()
       .then((data) => {
-        const names = (data.items || []).map((item) => item.name).filter(Boolean);
+        const names = (data.items || [])
+          .map((item) => item.name)
+          .filter(Boolean);
         setCustomers(names);
         if (names.length > 0) {
           setSelectedCustomer((prev) => (prev ? prev : names[0]));
@@ -183,7 +190,10 @@ export default function BuyPage() {
 
   return (
     <div className="space-y-6">
-      <BuyHeader onAddCustomer={() => setIsCustomerModalOpen(true)} />
+      <BuyHeader
+        totalBuyAmount={totalBuyAmount}
+        onAddCustomer={() => setIsCustomerModalOpen(true)}
+      />
       <BuyForm
         date={date}
         setDate={setDate}
