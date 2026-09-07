@@ -22,13 +22,23 @@ export const getUsdtAccount = async (_req, res) => {
     const totalDebit = items
       .filter((item) => item.type === "Debit")
       .reduce((sum, item) => sum + Math.abs(Number(item.amount || 0)), 0);
+    const totalExpense = items
+      .filter((item) => item.source === "Expense")
+      .reduce((sum, item) => sum + Math.abs(Number(item.amount || 0)), 0);
+    const totalBuy = items
+      .filter((item) => item.source === "Buy")
+      .reduce((sum, item) => sum + Math.abs(Number(item.amount || 0)), 0);
 
-    const balance = totalCredit - totalDebit;
+    const totalProfit = totalCredit - totalBuy;
+    const balance = totalProfit - totalExpense;
 
     return res.json({
       items,
       totalCredit,
       totalDebit,
+      totalBuy,
+      totalExpense,
+      totalProfit,
       balance,
       netBalance: balance,
     });
@@ -36,4 +46,3 @@ export const getUsdtAccount = async (_req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-

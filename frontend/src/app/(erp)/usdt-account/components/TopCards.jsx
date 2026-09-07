@@ -2,8 +2,8 @@
 
 import React from "react";
 import {
-    ArrowUp,
-    ArrowDown,
+    ChartNoAxesCombined,
+    ReceiptText,
     WalletCards,
 } from "lucide-react";
 
@@ -13,34 +13,34 @@ const formatUSDT = (value) =>
         maximumFractionDigits: 2,
     })} USDT`;
 
-function TopCards({ summary = {} }) {
+function TopCards({ summary = {}, isLoading = false }) {
     const cards = [
         {
-            title: "Total Credit",
-            subtitle: "Total from Sell Transactions",
-            value: summary.totalCredit,
-            icon: ArrowUp,
+            title: "USDT Balance",
+            subtitle: "Sell credits - buys - expenses",
+            value: summary.balance,
+            icon: WalletCards,
             cardStyle: "border-emerald-100 bg-emerald-50/40",
             iconStyle: "bg-emerald-100 text-emerald-600",
             valueStyle: "text-emerald-600",
         },
         {
-            title: "Total Debit",
-            subtitle: "Total from Buy Transactions",
-            value: summary.totalDebit,
-            icon: ArrowDown,
-            cardStyle: "border-rose-100 bg-rose-50/40",
-            iconStyle: "bg-rose-100 text-rose-500",
-            valueStyle: "text-rose-500",
-        },
-        {
-            title: "USDT Balance",
-            subtitle: "Credit - Debit",
-            value: summary.balance,
-            icon: WalletCards,
+            title: "Total Profit",
+            subtitle: "Sell credits - buy costs",
+            value: summary.totalProfit,
+            icon: ChartNoAxesCombined,
             cardStyle: "border-indigo-100 bg-indigo-50/40",
             iconStyle: "bg-indigo-100 text-indigo-600",
             valueStyle: "text-indigo-600",
+        },
+        {
+            title: "Total Expense",
+            subtitle: "USDT expenses",
+            value: summary.totalExpense,
+            icon: ReceiptText,
+            cardStyle: "border-rose-100 bg-rose-50/40",
+            iconStyle: "bg-rose-100 text-rose-500",
+            valueStyle: "text-rose-500",
         },
     ];
 
@@ -63,7 +63,7 @@ function TopCards({ summary = {} }) {
                                     {card.subtitle}
                                 </p>
                                 <p className={`mt-4 text-2xl font-bold tracking-tight ${card.valueStyle}`}>
-                                    {formatUSDT(card.value)}
+                                    {isLoading ? "Loading..." : formatUSDT(card.value)}
                                 </p>
                             </div>
                             <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${card.iconStyle}`}>
