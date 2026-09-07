@@ -12,6 +12,6 @@ export default function RootLayout({ children }) {
       <body className="antialiased bg-[#F8FAFC] text-slate-900 min-h-screen">
         <AuthProvider>{children}</AuthProvider>
       </body>
-    </html>
+    </html>  
   );
 }

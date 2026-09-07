@@ -12,9 +12,8 @@ export default function BuyPage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [apiError, setApiError] = React.useState("");
   const [date, setDate] = React.useState(new Date().toISOString().slice(0, 10));
-  const [selectedCustomer, setSelectedCustomer] =
-    React.useState("Walk-in Customer");
-  const [customers, setCustomers] = React.useState(["Walk-in Customer"]);
+  const [selectedCustomer, setSelectedCustomer] = React.useState("");
+  const [customers, setCustomers] = React.useState([]);
   const [scrap, setScrap] = React.useState("");
   const [touch, setTouch] = React.useState("");
   const [pure, setPure] = React.useState("");
@@ -81,11 +80,11 @@ export default function BuyPage() {
     customerApi
       .getAll()
       .then((data) => {
-        const names = data.items.map((item) => item.name).filter(Boolean);
-        setCustomers([
-          "Walk-in Customer",
-          ...names.filter((name) => name !== "Walk-in Customer"),
-        ]);
+        const names = (data.items || []).map((item) => item.name).filter(Boolean);
+        setCustomers(names);
+        if (names.length > 0) {
+          setSelectedCustomer((prev) => (prev ? prev : names[0]));
+        }
       })
       .catch(() => {
         setApiError("Unable to load customers.");
@@ -131,7 +130,7 @@ export default function BuyPage() {
   const editBuy = (item) => {
     setEditingBuyId(item._id || item.id);
     setDate(item.date ? new Date(item.date).toISOString().slice(0, 10) : "");
-    setSelectedCustomer(item.customer || "Walk-in Customer");
+    setSelectedCustomer(item.customer || customers[0] || "");
     setCustomers((current) =>
       current.includes(item.customer) || !item.customer
         ? current
@@ -149,7 +148,7 @@ export default function BuyPage() {
   const cancelEdit = () => {
     setEditingBuyId(null);
     setDate(new Date().toISOString().slice(0, 10));
-    setSelectedCustomer("Walk-in Customer");
+    setSelectedCustomer(customers[0] || "");
     setScrap("");
     setTouch("");
     setPure("");

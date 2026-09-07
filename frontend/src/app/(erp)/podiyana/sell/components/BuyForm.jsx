@@ -11,8 +11,8 @@ import { formatIDR, formatUSDT } from '@/lib/utils/formatters';
 export default function BuyForm({
   date = '',
   setDate = () => {},
-  customers = ['Walk-in Customer', 'Gold Supplier Alpha', 'Partner Beta'],
-  selectedCustomer = 'Walk-in Customer',
+  customers = [],
+  selectedCustomer = '',
   setSelectedCustomer = () => {},
   scrap = '',
   onScrapChange = () => {},

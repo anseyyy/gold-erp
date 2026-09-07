@@ -9,7 +9,7 @@ import { Plus, UserPlus } from 'lucide-react';
 import { formatIDR, formatUSDT } from '@/lib/utils/formatters';
 
 export default function SellForm({
-    date = '', setDate = () => { }, customers = ['Walk-in Customer'], selectedCustomer = 'Walk-in Customer', setSelectedCustomer = () => { },
+    date = '', setDate = () => { }, customers = [], selectedCustomer = '', setSelectedCustomer = () => { },
     scrap = '', onScrapChange = () => { }, touch = '', onTouchChange = () => { }, pure = '', setPure = () => { },
     scrapRate = '', setScrapRate = () => { }, pureIdrRate = '', setPureIdrRate = () => { }, dollarRate = '', setDollarRate = () => { },
     payment = 'USDT', setPayment = () => { }, errors = {}, isSubmitting = false, isEditing = false, onCancelEdit = () => { },

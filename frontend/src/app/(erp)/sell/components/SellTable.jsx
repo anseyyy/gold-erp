@@ -10,7 +10,7 @@ import { formatDate, formatNumber, formatIDR, formatUSDT } from '@/lib/utils/for
 export default function SellTable({ items = [], isLoading = false, canEdit = false, canDelete = false, onEditClick, onDeleteClick }) {
     const columns = [
         { header: 'Date', accessorKey: 'date', cell: (row) => <span className="text-slate-500 font-medium">{formatDate(row.date)}</span> },
-        { header: 'Customer', accessorKey: 'customer', cell: (row) => <span className="font-extrabold text-slate-800 text-xs">{row.customer || 'Walk-in Customer'}</span> },
+        { header: 'Customer', accessorKey: 'customer', cell: (row) => <span className="font-extrabold text-slate-800 text-xs">{row.customer || '—'}</span> },
         { header: 'Scrap (g)', accessorKey: 'scrap', cell: (row) => <span className="font-mono text-slate-700 text-xs">{formatNumber(row.scrap || 0)} g</span> },
         { header: 'Touch', accessorKey: 'touch', cell: (row) => <span className="font-mono text-slate-700 text-xs">{formatNumber(row.touch || 0, 1)}</span> },
         { header: 'Pure (g)', accessorKey: 'pure', cell: (row) => <span className="font-mono font-bold text-amber-700 text-xs">{formatNumber(row.pure || 0)} g</span> },

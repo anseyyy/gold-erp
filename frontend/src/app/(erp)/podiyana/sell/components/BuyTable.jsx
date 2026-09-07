@@ -17,7 +17,7 @@ export default function BuyTable({ items = [], isLoading = false, canDelete = fa
     {
       header: 'Customer',
       accessorKey: 'customer',
-      cell: (row) => <span className="font-extrabold text-slate-800 text-xs">{row.customer || 'Walk-in Customer'}</span>,
+      cell: (row) => <span className="font-extrabold text-slate-800 text-xs">{row.customer || '—'}</span>,
     },
     {
       header: 'Scrap / Touch',
