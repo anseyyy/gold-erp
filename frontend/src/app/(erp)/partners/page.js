@@ -1,63 +1,119 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import PartnerHeader from './components/PartnerHeader';
-import PartnerList from './components/PartnerList';
+import React, { useEffect, useState } from "react";
+import PartnerHeader from "./components/PartnerHeader";
+import PartnerList from "./components/PartnerList";
+import { partnersApi } from "@/lib/api";
 
 export default function PartnersPage() {
-  const [totalProfit] = useState(100000); // Total business profit $100,000 USDT
+  const [account, setAccount] = useState({
+    partners: [],
+    totalBusinessProfit: 0,
+    partnerCount: 0,
+    equalShare: 0,
+  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // 2 dummy partners (Partner A & Partner B)
-  const [partners, setPartners] = useState([
-    {
-      id: 'partner-a',
-      name: 'Partner A',
-      entries: [
-        { date: '2026-09-01', type: 'Debit', amount: 5000, description: 'Monthly Profit Payout' },
-        { date: '2026-08-25', type: 'Credit', amount: 2000, description: 'Capital Addition' },
-      ],
-    },
-    {
-      id: 'partner-b',
-      name: 'Partner B',
-      entries: [
-        { date: '2026-09-02', type: 'Debit', amount: 3500, description: 'Partial Payout' },
-      ],
-    },
-  ]);
-
-  const handleAddPartner = (name) => {
-    const newPartner = {
-      id: `partner-${Date.now()}`,
-      name,
-      entries: [],
-    };
-    setPartners([...partners, newPartner]);
+  const applyAccount = (data) => {
+    setAccount({
+      partners: data.partners || [],
+      totalBusinessProfit: data.totalBusinessProfit || 0,
+      partnerCount: data.partnerCount || 0,
+      equalShare: data.equalShare || 0,
+    });
   };
 
-  const handleAddEntry = (partnerId, entry) => {
-    setPartners(
-      partners.map((p) => {
-        if (p.id === partnerId) {
-          return {
-            ...p,
-            entries: [entry, ...p.entries],
-          };
+  const loadPartners = async (active = true) => {
+    try {
+      const data = await partnersApi.getAll();
+      if (!active) return;
+      applyAccount(data);
+      setError("");
+    } catch (requestError) {
+      if (active) {
+        setError(
+          requestError.response?.data?.message ||
+            "Unable to load partners from the backend.",
+        );
+      }
+    } finally {
+      if (active) setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let active = true;
+
+    partnersApi
+      .getAll()
+      .then((data) => {
+        if (active) {
+          applyAccount(data);
+          setError("");
         }
-        return p;
       })
-    );
+      .catch((requestError) => {
+        if (active) {
+          setError(
+            requestError.response?.data?.message ||
+              "Unable to load partners from the backend.",
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleAddPartner = async (name) => {
+    try {
+      await partnersApi.addPartner({ name });
+      setIsLoading(true);
+      await loadPartners();
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message || "Unable to add partner.",
+      );
+    }
+  };
+
+  const handleAddEntry = async (partnerId, entry) => {
+    try {
+      await partnersApi.addLedgerEntry({ partnerId, ...entry });
+      setIsLoading(true);
+      await loadPartners();
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          "Unable to add partner ledger entry.",
+      );
+    }
   };
 
   return (
     <div className="space-y-6">
       <PartnerHeader
-        partners={partners}
+        partners={account.partners}
         onAddPartner={handleAddPartner}
       />
+      {error && (
+        <p className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
+          {error}
+        </p>
+      )}
+      {isLoading && account.partners.length === 0 && (
+        <p className="rounded-lg border border-slate-200 bg-white px-4 py-8 text-center text-sm text-slate-400">
+          Loading partners...
+        </p>
+      )}
       <PartnerList
-        totalProfit={totalProfit}
-        partners={partners}
+        totalProfit={account.totalBusinessProfit}
+        partners={account.partners}
         onAddEntry={handleAddEntry}
       />
     </div>
