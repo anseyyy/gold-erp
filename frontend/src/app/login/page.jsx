@@ -3,15 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
-import { Mail, Lock, Shield, ArrowRight } from 'lucide-react';
+import Input from '@/components/ui/Input';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errors, setErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
 
@@ -24,110 +23,88 @@ export default function LoginPage() {
     }
   }, [user, router]);
 
-  const validate = () => {
-    const errs = {};
-    if (!email) errs.email = 'Email address is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) errs.email = 'Invalid email format';
-
-    if (!password) errs.password = 'Password is required';
-    else if (password.length < 6) errs.password = 'Password must be at least 6 characters';
-
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError('');
-
-    if (!validate()) return;
-
     setIsSubmitting(true);
+
     try {
       await login(email, password);
       router.push('/dashboard');
     } catch (err) {
-      setApiError(err.response?.data?.message || 'Invalid credentials. Please check your email & password.');
+      setApiError(
+        err.response?.data?.message ||
+          'Invalid credentials. Please check your username/email & password.'
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex flex-col justify-center items-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-extrabold text-xl mx-auto shadow-md">
-            G
-          </div>
-          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">GoldStock ERP</h1>
-          <p className="text-xs text-slate-500 font-medium">
-            Sign in to access your financial & operational workspace
-          </p>
-        </div>
-
-        <Card className="shadow-lg border-[#E8EAF0]">
-          <form onSubmit={handleSubmit} className="space-y-4 p-2">
-            {apiError && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-md text-xs font-semibold text-rose-700">
-                {apiError}
-              </div>
-            )}
-
-            <Input
-              label="Email Address"
-              type="email"
-              placeholder="name@company.com"
-              icon={Mail}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={errors.email}
-            />
-
-            <Input
-              label="Password"
-              type="password"
-              placeholder="••••••••"
-              icon={Lock}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              error={errors.password}
-            />
-
-            <div className="flex items-center justify-between text-xs pt-1">
-              <label className="flex items-center gap-2 text-slate-600 cursor-pointer">
-                <input
-                  type="checkbox"
-                  defaultChecked
-                  className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                />
-                <span>Remember session</span>
-              </label>
-              <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-700">
-                Forgot password?
-              </a>
+    <div className="relative flex items-center justify-center min-h-screen bg-white px-4">
+      <div className="w-full max-w-[440px]">
+        <div className="flex flex-col items-center justify-center text-center">
+          {/* Creston Brand Header */}
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-brand-gradient flex items-center justify-center text-white font-black text-xl shadow-md">
+              C
             </div>
+            <span className="text-2xl font-black tracking-tight text-slate-900">
+              CRESTON
+            </span>
+          </div>
 
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              isLoading={isSubmitting}
-              className="w-full mt-2"
-              icon={ArrowRight}
-            >
-              Sign In to ERP
-            </Button>
-          </form>
-
-        </Card>
-
-        {/* Security badge footer */}
-        <div className="flex items-center justify-center gap-1.5 text-slate-400 text-[11px]">
-          <Shield className="w-3.5 h-3.5 text-emerald-600" />
-          <span>Encrypted 256-bit Financial Endpoint</span>
+          <p className="mt-3 subheading">Manage workflows with ease</p>
         </div>
+
+        <form onSubmit={handleSubmit} className="mt-7 flex flex-col items-center w-full space-y-5">
+          <Input
+            type="text"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Username / email"
+            required
+          />
+
+          <Input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            required
+            rightElement={
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="text-gray-500 hover:text-gray-700 cursor-pointer focus:outline-none"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            }
+          />
+
+          {apiError && (
+            <p className="mt-1 text-sm text-red-600 text-center font-medium w-full">
+              {apiError}
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            variant="primary"
+            isLoading={isSubmitting}
+            className="w-full mt-2"
+          >
+            Login
+          </Button>
+        </form>
+
+        <p className="mt-8 text-center caption">
+          www.creston.com
+        </p>
       </div>
     </div>
   );

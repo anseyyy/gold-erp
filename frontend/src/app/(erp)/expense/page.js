@@ -8,16 +8,23 @@ import ExpenseTable from "./components/ExpenseTable";
 export default function ExpensePage() {
   const [items, setItems] = React.useState([]);
   const [editingExpense, setEditingExpense] = React.useState(null);
+  const [apiError, setApiError] = React.useState("");
 
   const loadExpenses = async () => {
-    const data = await expenseApi.getAll();
-    setItems(data.items || []);
+    try {
+      const data = await expenseApi.getAll();
+      setItems(data.items || []);
+    } catch (error) {
+      setApiError(error.response?.data?.message || "Unable to load expenses.");
+    }
   };
 
   React.useEffect(() => {
     let active = true;
     expenseApi.getAll().then((data) => {
       if (active) setItems(data.items || []);
+    }).catch((err) => {
+      if (active) setApiError(err.response?.data?.message || "Unable to load expenses.");
     });
     return () => {
       active = false;
@@ -25,19 +32,37 @@ export default function ExpensePage() {
   }, []);
 
   const saveExpense = async (data) => {
-    if (editingExpense) {
-      await expenseApi.update(editingExpense._id || editingExpense.id, data);
-      setEditingExpense(null);
-    } else {
-      const result = await expenseApi.create(data);
-      if (result?.item) setItems((current) => [result.item, ...current]);
+    setApiError("");
+    try {
+      if (editingExpense) {
+        await expenseApi.update(editingExpense._id || editingExpense.id, data);
+        setEditingExpense(null);
+      } else {
+        const result = await expenseApi.create(data);
+        if (result?.item) setItems((current) => [result.item, ...current]);
+      }
+      await loadExpenses();
+    } catch (error) {
+      setApiError(
+        error.response?.data?.message || "Failed to save expense. Please check all required fields."
+      );
     }
-    await loadExpenses();
   };
 
   const deleteExpense = async (id) => {
-    await expenseApi.delete(id);
-    await loadExpenses();
+    if (!id) return;
+    setApiError("");
+    try {
+      await expenseApi.delete(id);
+      await loadExpenses();
+    } catch (error) {
+      if (error.response?.status === 404) {
+        // If already deleted or not found on server, refresh list state silently
+        await loadExpenses();
+      } else {
+        setApiError(error.response?.data?.message || "Failed to delete expense.");
+      }
+    }
   };
 
   return (
@@ -46,11 +71,18 @@ export default function ExpensePage() {
         key={editingExpense?._id || editingExpense?.id || "new"}
         expense={editingExpense}
         onSubmit={saveExpense}
-        onCancel={() => setEditingExpense(null)}
+        onCancel={() => {
+          setApiError("");
+          setEditingExpense(null);
+        }}
+        apiError={apiError}
       />
       <ExpenseTable
         items={items}
-        onEdit={setEditingExpense}
+        onEdit={(item) => {
+          setApiError("");
+          setEditingExpense(item);
+        }}
         onDelete={deleteExpense}
       />
     </div>

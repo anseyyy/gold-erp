@@ -1,16 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
 :root {
-  --font-primary: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Font System */
+  --font-primary: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Pastel Financial Palette */
+  /* Custom Color System */
+  --color-primary-blue: #298EFF;
+  --color-primary-pink: #F859DD;
+  --color-border-custom: #D1D5DB;
+
+  /* Brand Palette */
   --bg-app: #f8fafc;
   --bg-card: #ffffff;
   --bg-subtle: #f1f5f9;
-  --border-color: #e8eaf0;
-  --border-strong: #cbd5e1;
+  --border-color: #d1d5db;
+  --border-strong: #9ca3af;
 
   --text-main: #0f172a;
   --text-sub: #475569;
@@ -33,17 +39,8 @@
   --pastel-amber-text: #b45309;
   --pastel-amber-border: #fde68a;
 
-  --pastel-sky-bg: #f0f9ff;
-  --pastel-sky-text: #0369a1;
-  --pastel-sky-border: #bae6fd;
-
-  --pastel-purple-bg: #faf5ff;
-  --pastel-purple-text: #6b21a8;
-  --pastel-purple-border: #e9d5ff;
-
   --shadow-subtle: 0 1px 3px 0 rgba(15, 23, 42, 0.03), 0 1px 2px -1px rgba(15, 23, 42, 0.03);
   --shadow-card: 0 4px 6px -1px rgba(15, 23, 42, 0.03), 0 2px 4px -2px rgba(15, 23, 42, 0.02);
-  --shadow-dropdown: 0 10px 15px -3px rgba(15, 23, 42, 0.08), 0 4px 6px -4px rgba(15, 23, 42, 0.04);
 
   --radius-sm: 6px;
   --radius-md: 8px;
@@ -52,11 +49,12 @@
 
 * {
   box-sizing: border-box;
-  font-family: var(--font-primary);
+  font-family: var(--font-primary) !important;
   border-color: var(--border-color);
 }
 
 html, body {
+  font-family: var(--font-primary) !important;
   background-color: var(--bg-app);
   color: var(--text-main);
   margin: 0;
@@ -65,93 +63,97 @@ html, body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Typography Utility Classes */
-.banner-text {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+/* Custom Design System Utility Classes */
+.bg-brand-gradient {
+  background: linear-gradient(90deg, #298EFF 0%, #F859DD 100%);
 }
 
-.page-title {
-  font-size: 1.5rem;
+.text-brand-gradient {
+  background: linear-gradient(90deg, #298EFF 0%, #F859DD 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Common Layout Spacing System */
+.container-padding-x {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+@media (min-width: 640px) {
+  .container-padding-x {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .container-padding-x {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.container-padding-y {
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.card-padding {
+  padding: 1.25rem;
+}
+
+.section-spacing {
+  margin-bottom: 1.5rem;
+}
+
+/* Custom Typography System */
+.heading-xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--text-main);
 }
 
-.section-title {
-  font-size: 1.125rem;
-  font-weight: 700;
+.heading-lg {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
   color: var(--text-main);
-  letter-spacing: -0.01em;
 }
 
-.card-title {
-  font-size: 0.85rem;
+.heading-md {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: -0.01em;
+  color: var(--text-main);
+}
+
+.heading-sm {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.subheading {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
   color: var(--text-sub);
 }
 
-.stat-value {
-  font-family: var(--font-mono);
-  font-size: 1.625rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text-main);
-}
-
-.stat-label {
-  font-size: 0.8125rem;
-  font-weight: 600;
+.caption {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
-/* Financial ERP Utility Components */
-.erp-card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-card);
+.stat-value {
+  font-family: var(--font-mono) !important;
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
-
-.erp-card-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.erp-card-body {
-  padding: 1.5rem;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type="number"] {
-  -moz-appearance: textfield;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-

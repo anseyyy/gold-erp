@@ -1,52 +1,71 @@
 'use client';
 
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-export default function Select({
-  label,
-  options = [],
-  error,
-  className = '',
-  id,
-  children,
-  ...props
-}) {
-  const selectId = id || (label ? label.toLowerCase().replace(/\s+/g, '-') : undefined);
+const Select = forwardRef(function Select(
+  {
+    label,
+    options = [],
+    error,
+    helperText,
+    className = '',
+    id,
+    name,
+    value,
+    onChange,
+    required = false,
+    disabled = false,
+    children,
+    ...props
+  },
+  ref,
+) {
+  const selectId = id || (label ? label.toLowerCase().replace(/[^a-z0-9]/g, '-') : undefined);
 
   return (
-    <div className="w-full space-y-1.5">
+    <div className="w-full">
       {label && (
         <label
           htmlFor={selectId}
-          className="block text-xs font-semibold uppercase tracking-wider text-slate-600"
+          className="block text-xs font-semibold text-slate-700 mb-1.5"
         >
           {label}
+          {required && <span className="text-rose-500 ml-0.5">*</span>}
         </label>
       )}
-      <div className="relative">
+      <div className="relative w-full">
         <select
+          ref={ref}
           id={selectId}
-          className={`w-full bg-white text-slate-900 text-sm rounded-md border transition-all duration-150 py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
+          name={name}
+          value={value}
+          onChange={onChange}
+          disabled={disabled}
+          required={required}
+          className={`w-full h-[44px] px-[14px] rounded-[8px] border bg-white text-slate-800 text-sm transition-all focus:outline-none ${
             error
-              ? 'border-rose-300 bg-rose-50/20 focus:ring-rose-500'
-              : 'border-slate-200 hover:border-slate-300'
-          } ${className}`}
+              ? 'border-rose-400 focus:border-2 focus:border-rose-500'
+              : 'border-[#D1D5DB] focus:border-2 focus:border-[#298EFF]'
+          } ${disabled ? 'bg-slate-100 cursor-not-allowed opacity-60' : ''} ${className}`}
           {...props}
         >
           {children
             ? children
             : options.map((opt) => {
-                const value = typeof opt === 'object' ? opt.value : opt;
-                const label = typeof opt === 'object' ? opt.label : opt;
+                const optValue = typeof opt === 'object' ? opt.value : opt;
+                const optLabel = typeof opt === 'object' ? opt.label : opt;
                 return (
-                  <option key={value} value={value}>
-                    {label}
+                  <option key={optValue} value={optValue}>
+                    {optLabel}
                   </option>
                 );
               })}
         </select>
       </div>
-      {error && <p className="text-xs font-medium text-rose-600">{error}</p>}
+      {error && <p className="mt-1 text-xs font-medium text-rose-600">{error}</p>}
+      {helperText && !error && <p className="mt-1 text-xs text-slate-500">{helperText}</p>}
     </div>
   );
-}
+});
+
+export default Select;
