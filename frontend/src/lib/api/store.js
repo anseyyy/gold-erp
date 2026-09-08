@@ -1,5 +1,5 @@
 /**
- * Local Data Store for GoldStockERP
+ * Local Data Store for Creston
  * Manages client state and provides realistic fallback data when backend endpoints are not active.
  */
 
@@ -18,11 +18,14 @@ const INITIAL_DATA = {
 };
 
 function getStorage(key) {
-  if (typeof window === 'undefined') return INITIAL_DATA[key] || [];
+  if (typeof window === "undefined") return INITIAL_DATA[key] || [];
   try {
     const raw = localStorage.getItem(`gold_erp_${key}`);
     if (!raw) {
-      localStorage.setItem(`gold_erp_${key}`, JSON.stringify(INITIAL_DATA[key] || []));
+      localStorage.setItem(
+        `gold_erp_${key}`,
+        JSON.stringify(INITIAL_DATA[key] || []),
+      );
       return INITIAL_DATA[key] || [];
     }
     return JSON.parse(raw);
@@ -33,7 +36,7 @@ function getStorage(key) {
 }
 
 function setStorage(key, data) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === "undefined") return;
   try {
     localStorage.setItem(`gold_erp_${key}`, JSON.stringify(data));
   } catch (err) {

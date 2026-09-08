@@ -1,5 +1,5 @@
 /**
- * Centralized financial calculations for GoldStockERP
+ * Centralized financial calculations for Creston
  */
 
 /**

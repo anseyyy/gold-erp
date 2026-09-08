@@ -59,10 +59,10 @@ export default function Sidebar({ className = '' }) {
         {/* Brand Header */}
         <div className="h-16 px-6 border-b border-[#E8EAF0] flex items-center gap-3 shrink-0">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-xs">
-            G
+            C
           </div>
           <div>
-            <h1 className="font-extrabold text-sm text-slate-900 tracking-tight">GoldStock ERP</h1>
+            <h1 className="font-extrabold text-sm text-slate-900 tracking-tight">Creston</h1>
             <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Financial Suite</p>
           </div>
         </div>
@@ -83,8 +83,8 @@ export default function Sidebar({ className = '' }) {
                     key={item.href}
                     href={item.href}
                     className={`flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-md transition-colors ${active
-                        ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-100'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-100'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                   >
                     <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-slate-400'}`} />
@@ -106,8 +106,8 @@ export default function Sidebar({ className = '' }) {
                 <button
                   onClick={() => setPodiyanaOpen(!podiyanaOpen)}
                   className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-md transition-colors ${isPodiyanaActive
-                      ? 'bg-slate-100/80 text-slate-900 font-bold'
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-slate-100/80 text-slate-900 font-bold'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                     }`}
                 >
                   <div className="flex items-center gap-3">
@@ -125,8 +125,8 @@ export default function Sidebar({ className = '' }) {
                     <Link
                       href="/podiyana/buy"
                       className={`block py-1.5 px-2 text-xs font-semibold rounded-md transition-colors ${isLinkActive('/podiyana/buy')
-                          ? 'bg-indigo-50 text-indigo-700 font-bold'
-                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                        ? 'bg-indigo-50 text-indigo-700 font-bold'
+                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                         }`}
                     >
                       Buy
@@ -134,8 +134,8 @@ export default function Sidebar({ className = '' }) {
                     <Link
                       href="/podiyana/sell"
                       className={`block py-1.5 px-2 text-xs font-semibold rounded-md transition-colors ${isLinkActive('/podiyana/sell')
-                          ? 'bg-indigo-50 text-indigo-700 font-bold'
-                          : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
+                        ? 'bg-indigo-50 text-indigo-700 font-bold'
+                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50'
                         }`}
                     >
                       Sell
@@ -160,8 +160,8 @@ export default function Sidebar({ className = '' }) {
                     key={item.href}
                     href={item.href}
                     className={`flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-md transition-colors ${active
-                        ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-100'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                      ? 'bg-indigo-50 text-indigo-700 font-bold border border-indigo-100'
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                       }`}
                   >
                     <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-slate-400'}`} />
