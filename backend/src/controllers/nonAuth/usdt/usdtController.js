@@ -1,4 +1,5 @@
 import { getUsdtLedger } from "../../../models/nonAuth/usdt/usdtModel.js";
+import ManualTransaction from "../../../models/nonAuth/manualTransaction/manualTransactionModel.js";
 
 export const getUsdtAccount = async (_req, res) => {
   try {
@@ -30,7 +31,7 @@ export const getUsdtAccount = async (_req, res) => {
       .reduce((sum, item) => sum + Math.abs(Number(item.amount || 0)), 0);
 
     const totalProfit = totalCredit - totalBuy;
-    const balance = totalProfit - totalExpense;
+    const balance = totalCredit - totalDebit;
 
     return res.json({
       items,
@@ -42,6 +43,35 @@ export const getUsdtAccount = async (_req, res) => {
       balance,
       netBalance: balance,
     });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const createUsdtManual = async (req, res) => {
+  try {
+    const { date, type, amount, customer, notes } = req.body;
+    const item = await ManualTransaction.create({
+      account: "USDT",
+      date: date || new Date(),
+      type: type === "Credit" ? "Credit" : "Debit",
+      amount: Number(amount || 0),
+      customer: customer || "Manual Entry",
+      source: "Manual",
+      notes: notes || "",
+      createdBy: req.user?._id,
+    });
+    return res.status(201).json({ item });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteUsdtManual = async (req, res) => {
+  try {
+    const item = await ManualTransaction.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ message: "Transaction not found" });
+    return res.json({ message: "Transaction deleted" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

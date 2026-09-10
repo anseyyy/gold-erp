@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,300..900;1,300..900&family=JetBrains+Mono:wght@500;600;700&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Font System */
   --font-primary: 'Inter Tight', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -47,6 +49,50 @@
   --radius-lg: 12px;
 }
 
+html.dark, .dark {
+  --bg-app: #090d16;
+  --bg-card: #0f172a;
+  --bg-subtle: #1e293b;
+  --border-color: #1e293b;
+  --border-strong: #334155;
+
+  --text-main: #f8fafc;
+  --text-sub: #cbd5e1;
+  --text-muted: #64748b;
+
+  --pastel-indigo-bg: #1e1b4b;
+  --pastel-indigo-text: #818cf8;
+  --pastel-indigo-border: #3730a3;
+
+  --pastel-emerald-bg: #064e3b;
+  --pastel-emerald-text: #34d399;
+  --pastel-emerald-border: #065f46;
+
+  --pastel-rose-bg: #881337;
+  --pastel-rose-text: #fb7185;
+  --pastel-rose-border: #9f1239;
+
+  --pastel-amber-bg: #78350f;
+  --pastel-amber-text: #fbbf24;
+  --pastel-amber-border: #92400e;
+}
+
+/* Custom Scrollbar for Dark Mode */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #090d16;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
 * {
   box-sizing: border-box;
   font-family: var(--font-primary) !important;
@@ -61,6 +107,7 @@ html, body {
   padding: 0;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Custom Design System Utility Classes */

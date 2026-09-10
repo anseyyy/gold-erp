@@ -4,10 +4,12 @@ import React, { useEffect, useState } from 'react';
 import TopCards from './components/TopCards';
 import ResentSells from './components/ResentSells';
 import ResentBuys from './components/ResentBuys';
-import { dashboardApi } from '@/lib/api';
+import { dashboardApi, dashboardCardsApi } from '@/lib/api';
 
 export default function DashboardPage() {
   const [summary, setSummary] = useState({
+    todaySalesUsdt: 0,
+    todayProfit: 0,
     totalUsdtBalance: 0,
     totalProfit: 0,
     totalExpense: 0,
@@ -18,25 +20,28 @@ export default function DashboardPage() {
 
   useEffect(() => {
     let active = true;
-    dashboardApi
-      .getSummary()
-      .then((data) => {
-        if (active) {
-          setSummary({
-            totalUsdtBalance: Number(data.totalUsdtBalance || 0),
-            totalProfit: Number(data.totalProfit || 0),
-            totalExpense: Number(data.totalExpense || 0),
-            recentSells: data.recentSells || [],
-            recentBuys: data.recentBuys || [],
-          });
-        }
-      })
-      .catch((err) => {
-        console.error('Failed to fetch dashboard summary:', err);
-      })
-      .finally(() => {
-        if (active) setIsLoading(false);
+
+    Promise.allSettled([
+      dashboardCardsApi.getCardsData(),
+      dashboardApi.getSummary(),
+    ]).then(([cardsRes, summaryRes]) => {
+      if (!active) return;
+
+      const cardsData = cardsRes.status === 'fulfilled' ? cardsRes.value : {};
+      const summaryData = summaryRes.status === 'fulfilled' ? summaryRes.value : {};
+
+      setSummary({
+        todaySalesUsdt: Number(cardsData.todaySalesUsdt || 0),
+        todayProfit: Number(cardsData.todayProfit || 0),
+        totalUsdtBalance: Number(cardsData.totalUsdtBalance ?? summaryData.totalUsdtBalance ?? 0),
+        totalProfit: Number(cardsData.totalProfit ?? summaryData.totalProfit ?? 0),
+        totalExpense: Number(cardsData.totalExpense ?? summaryData.totalExpense ?? 0),
+        recentSells: summaryData.recentSells || [],
+        recentBuys: summaryData.recentBuys || [],
       });
+    }).finally(() => {
+      if (active) setIsLoading(false);
+    });
 
     return () => {
       active = false;

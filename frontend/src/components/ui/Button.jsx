@@ -16,17 +16,17 @@ export default function Button({
   ...props
 }) {
   const baseStyles =
-    'inline-flex items-center justify-center font-medium rounded-[8px] border border-[#D1D5DB] transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none';
+    'inline-flex items-center justify-center font-medium rounded-[8px] border border-[#D1D5DB] dark:border-slate-800 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer select-none';
 
   const variants = {
     primary:
       'bg-gradient-to-r from-[#298EFF] to-[#F859DD] text-white hover:opacity-90 active:opacity-100 shadow-xs focus:ring-[#298EFF]',
     secondary:
-      'bg-white hover:bg-slate-50 text-slate-700 focus:ring-slate-400 shadow-2xs',
+      'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 focus:ring-slate-400 dark:focus:ring-slate-600 shadow-2xs',
     outline:
-      'bg-white hover:bg-slate-50 text-slate-700 focus:ring-slate-400 shadow-2xs',
+      'bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-slate-400 dark:focus:ring-slate-600 shadow-2xs',
     ghost:
-      'bg-transparent hover:bg-slate-100 text-slate-600 border-transparent focus:ring-slate-400',
+      'bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 border-transparent focus:ring-slate-400',
     danger:
       'bg-rose-600 hover:bg-rose-700 text-white border-rose-600 shadow-xs focus:ring-rose-500',
   };

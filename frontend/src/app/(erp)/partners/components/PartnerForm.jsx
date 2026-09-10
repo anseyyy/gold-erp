@@ -26,8 +26,8 @@ export default function PartnerForm({ partnerName, onSubmitEntry }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-slate-50/80 p-3.5 rounded-lg border border-slate-200 space-y-3">
-      <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+    <form onSubmit={handleSubmit} className="bg-slate-50/80 dark:bg-slate-800/60 p-3.5 rounded-lg border border-slate-200 dark:border-slate-700/60 space-y-3">
+      <h4 className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-wider">
         Add Entry for {partnerName}
       </h4>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">

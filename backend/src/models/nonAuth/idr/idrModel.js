@@ -1,6 +1,7 @@
 import Buy from "../buy/buyModel.js";
 import Sell from "../sell/sellModel.js";
 import Expense from "../expense/expenseModel.js";
+import ManualTransaction from "../manualTransaction/manualTransactionModel.js";
 
 const toTransaction = (item, type, source, amount, customer) => ({
   id: `${source.toUpperCase()}-${item._id}`,
@@ -17,10 +18,11 @@ const toTransaction = (item, type, source, amount, customer) => ({
 });
 
 export const getIdrLedger = async () => {
-  const [buys, sells, expenses] = await Promise.all([
+  const [buys, sells, expenses, manuals] = await Promise.all([
     Buy.find({ payment: "IDR" }).lean(),
     Sell.find({ payment: "IDR" }).lean(),
     Expense.find({ currency: "IDR" }).lean(),
+    ManualTransaction.find({ account: { $regex: /^idr$/i } }).lean(),
   ]);
 
   const rawTransactions = [
@@ -32,6 +34,9 @@ export const getIdrLedger = async () => {
     ),
     ...expenses.map((item) =>
       toTransaction(item, "Debit", "Expense", item.amount, item.reason),
+    ),
+    ...manuals.map((item) =>
+      toTransaction(item, item.type, item.source || "Manual", item.amount, item.customer),
     ),
   ];
 

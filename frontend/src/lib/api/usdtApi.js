@@ -11,6 +11,11 @@ export const usdtApi = {
     return res.data;
   },
 
+  createManual: async (data) => {
+    const res = await axiosInstance.post("/usdt/manual", data);
+    return res.data;
+  },
+
   delete: async (id) => {
     const res = await axiosInstance.delete(`/usdt/${id}`);
     return res.data;

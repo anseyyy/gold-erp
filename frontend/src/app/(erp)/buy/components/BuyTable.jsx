@@ -14,33 +14,42 @@ export default function BuyTable({
   canDelete = false,
   onEditClick,
   onDeleteClick,
+  onCustomerClick,
 }) {
   const columns = [
     {
       header: 'Date',
       accessorKey: 'date',
-      cell: (row) => <span className="text-slate-500 font-medium">{formatDate(row.date)}</span>,
+      cell: (row) => <span className="text-slate-500 dark:text-slate-400 font-medium">{formatDate(row.date)}</span>,
     },
     {
       header: 'Customer',
       accessorKey: 'customer',
-      cell: (row) => <span className="font-extrabold text-slate-800 text-xs">{row.customer || '—'}</span>,
+      cell: (row) => (
+        <button
+          onClick={() => onCustomerClick?.(row.customer)}
+          className="font-extrabold text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 hover:underline text-xs cursor-pointer text-left focus:outline-none"
+          title={`Click to view ${row.customer}'s complete ledger history`}
+        >
+          {row.customer || '—'}
+        </button>
+      ),
     },
     {
       header: 'Scrap (g)',
       accessorKey: 'scrap',
-      cell: (row) => <span className="font-mono text-slate-700 text-xs">{formatNumber(row.scrap || 0)} g</span>,
+      cell: (row) => <span className="font-mono text-slate-700 dark:text-slate-300 text-xs">{formatNumber(row.scrap || 0)} g</span>,
     },
     {
       header: 'Touch',
       accessorKey: 'touch',
-      cell: (row) => <span className="font-mono text-slate-700 text-xs">{formatNumber(row.touch || 0, 1)}</span>,
+      cell: (row) => <span className="font-mono text-slate-700 dark:text-slate-300 text-xs">{formatNumber(row.touch || 0, 1)}</span>,
     },
     {
       header: 'Pure (g)',
       accessorKey: 'pure',
       cell: (row) => (
-        <span className="font-mono font-bold text-amber-700 text-xs">
+        <span className="font-mono font-bold text-amber-700 dark:text-amber-400 text-xs">
           {formatNumber(row.pure || row.amount || 0)} g
         </span>
       ),
@@ -48,23 +57,23 @@ export default function BuyTable({
     {
       header: 'Scrap Rate',
       accessorKey: 'scrapRate',
-      cell: (row) => <span className="font-mono text-slate-600 text-xs">{formatIDR(row.scrapRate || 0)}</span>,
+      cell: (row) => <span className="font-mono text-slate-600 dark:text-slate-400 text-xs">{formatIDR(row.scrapRate || 0)}</span>,
     },
     {
       header: 'Pure IDR Rate',
       accessorKey: 'pureIdrRate',
-      cell: (row) => <span className="font-mono text-slate-600 text-xs">{formatIDR(row.pureIdrRate || row.rate || 0)}</span>,
+      cell: (row) => <span className="font-mono text-slate-600 dark:text-slate-400 text-xs">{formatIDR(row.pureIdrRate || row.rate || 0)}</span>,
     },
     {
       header: 'Dollar Rate',
       accessorKey: 'dollarRate',
-      cell: (row) => <span className="font-mono text-slate-600 text-xs">{formatIDR(row.dollarRate || 0)} / USD</span>,
+      cell: (row) => <span className="font-mono text-slate-600 dark:text-slate-400 text-xs">{formatIDR(row.dollarRate || 0)} / USD</span>,
     },
     {
       header: 'Total IDR',
       accessorKey: 'totalIdr',
       cell: (row) => (
-        <span className="font-mono font-bold text-indigo-700 text-xs">
+        <span className="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-xs">
           {formatIDR(row.totalIdr || row.total || (row.amount * row.rate) || 0)}
         </span>
       ),
@@ -73,7 +82,7 @@ export default function BuyTable({
       header: 'Total Dollar ($)',
       accessorKey: 'totalDollarOut',
       cell: (row) => (
-        <span className="font-mono font-bold text-emerald-600 text-xs">
+        <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">
           {formatUSDT(row.totalDollar || row.totalDollarOut || 0)}
         </span>
       ),
@@ -82,7 +91,7 @@ export default function BuyTable({
       header: 'Balance',
       accessorKey: 'balance',
       cell: (row) => (
-        <span className="font-mono font-bold text-slate-800 text-xs">
+        <span className="font-mono font-bold text-slate-800 dark:text-slate-100 text-xs">
           {row.payment === 'USDT' ? formatUSDT(row.balance || 0) : formatIDR(row.balance || 0)}
         </span>
       ),
@@ -106,7 +115,7 @@ export default function BuyTable({
             {canEdit && (
               <button
                 onClick={() => onEditClick(row)}
-                className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
+                className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-md transition-colors"
                 title="Edit buy order"
               >
                 <Pencil className="w-4 h-4" />
@@ -115,7 +124,7 @@ export default function BuyTable({
             {canDelete && (
               <button
                 onClick={() => onDeleteClick(row._id || row.id)}
-                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors"
+                className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-md transition-colors"
                 title="Delete buy order"
               >
                 <Trash2 className="w-4 h-4" />
@@ -123,7 +132,7 @@ export default function BuyTable({
             )}
           </div>
         ) : (
-          <span className="text-[11px] text-slate-300 italic">No permission</span>
+          <span className="text-[11px] text-slate-300 dark:text-slate-600 italic">No permission</span>
         )
       ),
     },

@@ -1,34 +1,50 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { expenseApi } from "@/lib/api";
+import ExpenseCards from "./components/ExpenseCards";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseTable from "./components/ExpenseTable";
 
 export default function ExpensePage() {
-  const [items, setItems] = React.useState([]);
-  const [editingExpense, setEditingExpense] = React.useState(null);
-  const [apiError, setApiError] = React.useState("");
+  const router = useRouter();
+  const [items, setItems] = useState([]);
+  const [totals, setTotals] = useState({ totalUsdt: 0, totalIdr: 0, totalCount: 0 });
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [apiError, setApiError] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const loadExpenses = async () => {
     try {
+      setIsLoading(true);
       const data = await expenseApi.getAll();
-      setItems(data.items || []);
+      const fetchedItems = data.items || [];
+      setItems(fetchedItems);
+
+      // Compute total USDT, IDR, and count from backend totals or fallback
+      const totalUsdt = data.totalUsdt ?? fetchedItems
+        .filter((i) => i.currency === "USDT")
+        .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+      const totalIdr = data.totalIdr ?? fetchedItems
+        .filter((i) => i.currency === "IDR")
+        .reduce((sum, i) => sum + (Number(i.amount) || 0), 0);
+
+      setTotals({
+        totalUsdt,
+        totalIdr,
+        totalCount: data.totalCount ?? fetchedItems.length,
+      });
     } catch (error) {
       setApiError(error.response?.data?.message || "Unable to load expenses.");
+    } fontally: {
+      setIsLoading(false);
     }
   };
 
-  React.useEffect(() => {
-    let active = true;
-    expenseApi.getAll().then((data) => {
-      if (active) setItems(data.items || []);
-    }).catch((err) => {
-      if (active) setApiError(err.response?.data?.message || "Unable to load expenses.");
-    });
-    return () => {
-      active = false;
-    };
+  useEffect(() => {
+    loadExpenses();
   }, []);
 
   const saveExpense = async (data) => {
@@ -38,8 +54,7 @@ export default function ExpensePage() {
         await expenseApi.update(editingExpense._id || editingExpense.id, data);
         setEditingExpense(null);
       } else {
-        const result = await expenseApi.create(data);
-        if (result?.item) setItems((current) => [result.item, ...current]);
+        await expenseApi.create(data);
       }
       await loadExpenses();
     } catch (error) {
@@ -57,7 +72,6 @@ export default function ExpensePage() {
       await loadExpenses();
     } catch (error) {
       if (error.response?.status === 404) {
-        // If already deleted or not found on server, refresh list state silently
         await loadExpenses();
       } else {
         setApiError(error.response?.data?.message || "Failed to delete expense.");
@@ -67,6 +81,15 @@ export default function ExpensePage() {
 
   return (
     <div className="space-y-6">
+      {/* Top Total Expense Cards Header */}
+      <ExpenseCards
+        totalUsdt={totals.totalUsdt}
+        totalIdr={totals.totalIdr}
+        totalCount={totals.totalCount}
+        onOpenSpreadsheet={() => router.push('/spreadsheet?module=expense')}
+      />
+
+      {/* Expense Entry Form */}
       <ExpenseForm
         key={editingExpense?._id || editingExpense?.id || "new"}
         expense={editingExpense}
@@ -77,6 +100,8 @@ export default function ExpensePage() {
         }}
         apiError={apiError}
       />
+
+      {/* Expense Data Table */}
       <ExpenseTable
         items={items}
         onEdit={(item) => {

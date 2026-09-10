@@ -1,9 +1,14 @@
 import axiosInstance from "../axios";
 
 export const expenseApi = {
-  getAll: async () => {
-    const res = await axiosInstance.get("/expense");
+  getAll: async (params = {}) => {
+    const res = await axiosInstance.get("/expense", { params });
     return { ...res.data, items: res.data.items || res.data };
+  },
+
+  getSummary: async () => {
+    const res = await axiosInstance.get("/expense/summary");
+    return res.data;
   },
 
   create: async (data) => {

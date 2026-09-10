@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { buyApi, customerApi } from "@/lib/api";
 import BuyHeader from "./components/BuyHeader";
 import BuyForm from "./components/BuyForm";
@@ -8,24 +9,30 @@ import BuyTable from "./components/BuyTable";
 import AddCustomerModal from "./components/AddCustomerModal";
 
 export default function BuyPage() {
-  const [items, setItems] = React.useState([]);
-  const [totalBuyAmount, setTotalBuyAmount] = React.useState(0);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [apiError, setApiError] = React.useState("");
-  const [date, setDate] = React.useState(new Date().toISOString().slice(0, 10));
-  const [selectedCustomer, setSelectedCustomer] = React.useState("");
-  const [customers, setCustomers] = React.useState([]);
-  const [scrap, setScrap] = React.useState("");
-  const [touch, setTouch] = React.useState("");
-  const [pure, setPure] = React.useState("");
-  const [scrapRate, setScrapRate] = React.useState("");
-  const [pureIdrRate, setPureIdrRate] = React.useState("");
-  const [dollarRate, setDollarRate] = React.useState("");
-  const [payment, setPayment] = React.useState("USDT");
-  const [editingBuyId, setEditingBuyId] = React.useState(null);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = React.useState(false);
-  const [newCustomerName, setNewCustomerName] = React.useState("");
+  const router = useRouter();
+  const [items, setItems] = useState([]);
+  const [totalBuyAmount, setTotalBuyAmount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [apiError, setApiError] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState("ALL");
+
+  // Form states
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const [selectedCustomer, setSelectedCustomer] = useState("");
+  const [customers, setCustomers] = useState([]);
+  const [scrap, setScrap] = useState("");
+  const [touch, setTouch] = useState("");
+  const [pure, setPure] = useState("");
+  const [scrapRate, setScrapRate] = useState("");
+  const [pureIdrRate, setPureIdrRate] = useState("");
+  const [dollarRate, setDollarRate] = useState("");
+  const [payment, setPayment] = useState("USDT");
+  const [editingBuyId, setEditingBuyId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [newCustomerName, setNewCustomerName] = useState("");
 
   const calculatedPure = pure
     ? Number(pure)
@@ -42,7 +49,7 @@ export default function BuyPage() {
   const calculatedBalance =
     payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr;
 
-  const loadBuys = React.useCallback(async () => {
+  const loadBuys = useCallback(async () => {
     setApiError("");
     try {
       const data = await buyApi.getAll();
@@ -57,7 +64,7 @@ export default function BuyPage() {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let active = true;
     buyApi
       .getAll()
@@ -81,7 +88,7 @@ export default function BuyPage() {
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     customerApi
       .getAll()
       .then((data) => {
@@ -123,6 +130,7 @@ export default function BuyPage() {
       }
       await loadBuys();
       setEditingBuyId(null);
+      setIsFormOpen(false);
       setScrap("");
       setTouch("");
       setPure("");
@@ -136,6 +144,7 @@ export default function BuyPage() {
 
   const editBuy = (item) => {
     setEditingBuyId(item._id || item.id);
+    setIsFormOpen(true);
     setDate(item.date ? new Date(item.date).toISOString().slice(0, 10) : "");
     setSelectedCustomer(item.customer || customers[0] || "");
     setCustomers((current) =>
@@ -154,6 +163,7 @@ export default function BuyPage() {
 
   const cancelEdit = () => {
     setEditingBuyId(null);
+    setIsFormOpen(false);
     setDate(new Date().toISOString().slice(0, 10));
     setSelectedCustomer(customers[0] || "");
     setScrap("");
@@ -188,52 +198,86 @@ export default function BuyPage() {
     await loadBuys();
   };
 
+  const handleCustomerClick = (customerName) => {
+    if (!customerName) return;
+    router.push(`/customer-ledger/${encodeURIComponent(customerName)}`);
+  };
+
+  // Filtered dataset for BuyTable
+  const filteredItems = useMemo(() => {
+    return items.filter((item) => {
+      if (paymentFilter !== "ALL" && item.payment !== paymentFilter) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const custMatch = item.customer?.toLowerCase().includes(q);
+        const pureMatch = String(item.pure || "").toLowerCase().includes(q);
+        const idrMatch = String(item.totalIdr || "").toLowerCase().includes(q);
+        if (!custMatch && !pureMatch && !idrMatch) return false;
+      }
+      return true;
+    });
+  }, [items, searchQuery, paymentFilter]);
+
   return (
     <div className="space-y-6">
       <BuyHeader
         totalBuyAmount={totalBuyAmount}
         onAddCustomer={() => setIsCustomerModalOpen(true)}
+        isFormOpen={isFormOpen}
+        onToggleForm={() => setIsFormOpen((prev) => !prev)}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        paymentFilter={paymentFilter}
+        setPaymentFilter={setPaymentFilter}
       />
-      <BuyForm
-        date={date}
-        setDate={setDate}
-        customers={customers}
-        selectedCustomer={selectedCustomer}
-        setSelectedCustomer={setSelectedCustomer}
-        scrap={scrap}
-        onScrapChange={setScrap}
-        touch={touch}
-        onTouchChange={setTouch}
-        pure={pure}
-        setPure={setPure}
-        scrapRate={scrapRate}
-        setScrapRate={setScrapRate}
-        pureIdrRate={pureIdrRate}
-        setPureIdrRate={setPureIdrRate}
-        dollarRate={dollarRate}
-        setDollarRate={setDollarRate}
-        payment={payment}
-        setPayment={setPayment}
-        isSubmitting={isSubmitting}
-        isEditing={Boolean(editingBuyId)}
-        onCancelEdit={cancelEdit}
-        onSubmit={submitBuy}
-        onAddCustomer={() => setIsCustomerModalOpen(true)}
-        calculatedPure={calculatedPure}
-        calculatedPureIdrRate={calculatedPureIdrRate}
-        calculatedTotalIdr={calculatedTotalIdr}
-        calculatedTotalDollar={calculatedTotalDollar}
-        calculatedBalance={calculatedBalance}
-      />
-      {apiError && <p className="text-sm text-rose-600">{apiError}</p>}
+
+      {/* Collapsible / Toggleable Buy Form */}
+      {isFormOpen && (
+        <BuyForm
+          date={date}
+          setDate={setDate}
+          customers={customers}
+          selectedCustomer={selectedCustomer}
+          setSelectedCustomer={setSelectedCustomer}
+          scrap={scrap}
+          onScrapChange={setScrap}
+          touch={touch}
+          onTouchChange={setTouch}
+          pure={pure}
+          setPure={setPure}
+          scrapRate={scrapRate}
+          setScrapRate={setScrapRate}
+          pureIdrRate={pureIdrRate}
+          setPureIdrRate={setPureIdrRate}
+          dollarRate={dollarRate}
+          setDollarRate={setDollarRate}
+          payment={payment}
+          setPayment={setPayment}
+          isSubmitting={isSubmitting}
+          isEditing={Boolean(editingBuyId)}
+          onCancelEdit={cancelEdit}
+          onSubmit={submitBuy}
+          onAddCustomer={() => setIsCustomerModalOpen(true)}
+          calculatedPure={calculatedPure}
+          calculatedPureIdrRate={calculatedPureIdrRate}
+          calculatedTotalIdr={calculatedTotalIdr}
+          calculatedTotalDollar={calculatedTotalDollar}
+          calculatedBalance={calculatedBalance}
+        />
+      )}
+
+      {apiError && <p className="text-sm text-rose-600 font-semibold">{apiError}</p>}
+
       <BuyTable
-        items={items}
+        items={filteredItems}
         isLoading={isLoading}
         canEdit
         canDelete
         onEditClick={editBuy}
         onDeleteClick={deleteBuy}
+        onCustomerClick={handleCustomerClick}
       />
+
       <AddCustomerModal
         isOpen={isCustomerModalOpen}
         onClose={() => setIsCustomerModalOpen(false)}

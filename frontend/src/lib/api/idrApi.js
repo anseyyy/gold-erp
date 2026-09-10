@@ -36,6 +36,15 @@ export const idrApi = {
     }
   },
 
+  createManual: async (data) => {
+    try {
+      const res = await axiosInstance.post("/idr/manual", data);
+      return res.data;
+    } catch (err) {
+      return localStore.addItem("idr", data);
+    }
+  },
+
   delete: async (id) => {
     try {
       const res = await axiosInstance.delete(`/idr/${id}`);

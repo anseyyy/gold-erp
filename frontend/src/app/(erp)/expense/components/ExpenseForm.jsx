@@ -43,7 +43,7 @@ export default function ExpenseForm({ expense, onSubmit, onCancel, apiError }) {
     <Card header={expense ? "Edit Expense Entry" : "Record New Expense Entry"}>
       <form onSubmit={submit} className="space-y-4">
         {(errorToDisplay) && (
-          <div className="p-3 bg-rose-50 border border-rose-200 rounded-md text-xs font-semibold text-rose-700">
+          <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-md text-xs font-semibold text-rose-700 dark:text-rose-300">
             {errorToDisplay}
           </div>
         )}

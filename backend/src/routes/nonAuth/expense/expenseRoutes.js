@@ -5,6 +5,7 @@ import {
   deleteExpense,
   getExpense,
   getExpenses,
+  getExpenseSummary,
   updateExpense,
 } from "../../../controllers/nonAuth/expense/expenseController.js";
 
@@ -12,6 +13,7 @@ const router = Router();
 
 router.use(protect);
 router.get("/", getExpenses);
+router.get("/summary", getExpenseSummary);
 router.get("/:id", getExpense);
 router.post("/", createExpense);
 router.put("/:id", updateExpense);

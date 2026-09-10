@@ -8,19 +8,19 @@ export default function Toast({ message, type = 'success', onClose }) {
 
   const styles = {
     success: {
-      bg: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+      bg: 'bg-emerald-50 dark:bg-emerald-950/80 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200',
       icon: CheckCircle2,
-      iconColor: 'text-emerald-600',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
     },
     error: {
-      bg: 'bg-rose-50 border-rose-200 text-rose-800',
+      bg: 'bg-rose-50 dark:bg-rose-950/80 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-200',
       icon: AlertCircle,
-      iconColor: 'text-rose-600',
+      iconColor: 'text-rose-600 dark:text-rose-400',
     },
     info: {
-      bg: 'bg-sky-50 border-sky-200 text-sky-800',
+      bg: 'bg-sky-50 dark:bg-sky-950/80 border-sky-200 dark:border-sky-800 text-sky-800 dark:text-sky-200',
       icon: Info,
-      iconColor: 'text-sky-600',
+      iconColor: 'text-sky-600 dark:text-sky-400',
     },
   };
 
@@ -33,7 +33,7 @@ export default function Toast({ message, type = 'success', onClose }) {
         <IconComponent className={`w-5 h-5 shrink-0 ${current.iconColor}`} />
         <p className="text-xs font-semibold">{message}</p>
         {onClose && (
-          <button onClick={onClose} className="ml-2 text-slate-400 hover:text-slate-600">
+          <button onClick={onClose} className="ml-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
             <X className="w-4 h-4" />
           </button>
         )}

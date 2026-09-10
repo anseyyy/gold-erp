@@ -35,18 +35,18 @@ export default function OverviewChart() {
       header={
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
           <div>
-            <h3 className="font-bold text-slate-800 text-sm">Financial Overview</h3>
-            <p className="text-xs text-slate-400">Comparative trend analysis across accounts</p>
+            <h3 className="font-bold text-slate-800 dark:text-slate-100 text-sm">Financial Overview</h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Comparative trend analysis across accounts</p>
           </div>
-          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-md border border-slate-200">
+          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-md border border-slate-200 dark:border-slate-700">
             {ranges.map((r) => (
               <button
                 key={r}
                 onClick={() => setRange(r)}
                 className={`px-2.5 py-1 text-xs font-semibold rounded-sm transition-all ${
                   range === r
-                    ? 'bg-white text-indigo-700 shadow-2xs font-bold'
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-white dark:bg-slate-900 text-indigo-700 dark:text-indigo-400 shadow-2xs font-bold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
                 }`}
               >
                 {r}
@@ -78,7 +78,7 @@ export default function OverviewChart() {
                 </linearGradient>
               </defs>
 
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E8EAF0" />
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color, #334155)" opacity={0.5} />
 
               <XAxis
                 dataKey="date"
@@ -96,12 +96,13 @@ export default function OverviewChart() {
 
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#ffffff',
-                  borderColor: '#E8EAF0',
+                  backgroundColor: 'var(--bg-card, #0f172a)',
+                  borderColor: 'var(--border-color, #1e293b)',
                   borderRadius: '8px',
-                  boxShadow: '0 4px 12px rgba(15,23,42,0.08)',
+                  boxShadow: '0 4px 12px rgba(15,23,42,0.15)',
                   fontSize: '12px',
                   fontWeight: '600',
+                  color: 'var(--text-main, #f8fafc)',
                 }}
                 formatter={(value) => [`$${Number(value).toLocaleString()}`, '']}
               />

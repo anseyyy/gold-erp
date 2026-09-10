@@ -23,15 +23,15 @@ export default function PartnerHeader({ partners = [], onAddPartner }) {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Partners Account</h1>
-          <p className="text-xs text-slate-500 font-medium mt-0.5">
+          <h1 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">Partners Account</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
             Equity share distribution and partner ledger transactions.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-lg border border-slate-200">
-            <Users className="w-4 h-4 text-slate-500 ml-1" />
+          <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+            <Users className="w-4 h-4 text-slate-500 dark:text-slate-400 ml-1" />
             {partners.map((p, idx) => (
               <Badge key={idx} variant="indigo" className="text-xs px-2 py-0.5 font-bold">
                 {p.name}

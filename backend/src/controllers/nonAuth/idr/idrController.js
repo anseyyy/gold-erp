@@ -1,4 +1,5 @@
 import { getIdrLedger } from "../../../models/nonAuth/idr/idrModel.js";
+import ManualTransaction from "../../../models/nonAuth/manualTransaction/manualTransactionModel.js";
 
 export const getIdrAccount = async (_req, res) => {
   try {
@@ -32,6 +33,35 @@ export const getIdrAccount = async (_req, res) => {
       balance,
       netBalance: balance,
     });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const createIdrManual = async (req, res) => {
+  try {
+    const { date, type, amount, customer, notes } = req.body;
+    const item = await ManualTransaction.create({
+      account: "IDR",
+      date: date || new Date(),
+      type: type === "Credit" ? "Credit" : "Debit",
+      amount: Number(amount || 0),
+      customer: customer || "Manual Entry",
+      source: "Manual",
+      notes: notes || "",
+      createdBy: req.user?._id,
+    });
+    return res.status(201).json({ item });
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteIdrManual = async (req, res) => {
+  try {
+    const item = await ManualTransaction.findByIdAndDelete(req.params.id);
+    if (!item) return res.status(404).json({ message: "Transaction not found" });
+    return res.json({ message: "Transaction deleted" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

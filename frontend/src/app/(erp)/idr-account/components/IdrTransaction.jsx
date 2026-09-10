@@ -60,22 +60,22 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
     return (
         <>
-            <div className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div className="w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
 
                 {isLoading && (
-                    <p className="px-5 py-8 text-center text-sm text-slate-400">
+                    <p className="px-5 py-8 text-center text-sm text-slate-400 dark:text-slate-500">
                         Loading IDR transactions...
                     </p>
                 )}
 
                 {!isLoading && error && (
-                    <p className="px-5 py-8 text-center text-sm text-rose-500">
+                    <p className="px-5 py-8 text-center text-sm text-rose-500 dark:text-rose-400">
                         {error}
                     </p>
                 )}
 
                 {!isLoading && !error && transactions.length === 0 && (
-                    <p className="px-5 py-8 text-center text-sm text-slate-400">
+                    <p className="px-5 py-8 text-center text-sm text-slate-400 dark:text-slate-500">
                         No IDR transactions yet.
                     </p>
                 )}
@@ -87,41 +87,41 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
                             {/* Table Header */}
                             <thead>
-                                <tr className="border-b border-slate-200 bg-slate-50/70">
+                                <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60">
 
-                                    <th className="w-[55px] px-5 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="w-[55px] px-5 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         #
                                     </th>
 
-                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Date
                                     </th>
 
-                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Type
                                     </th>
 
-                                    <th className="px-4 py-4 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Amount (IDR)
                                     </th>
 
-                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Description / Customer
                                     </th>
 
-                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Source
                                     </th>
 
-                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Reference
                                     </th>
 
-                                    <th className="px-4 py-4 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="px-4 py-4 text-right text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Balance (IDR)
                                     </th>
 
-                                    <th className="w-[70px] px-4 py-4 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400">
+                                    <th className="w-[70px] px-4 py-4 text-center text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 dark:text-slate-400">
                                         Action
                                     </th>
 
@@ -137,16 +137,16 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                     return (
                                         <tr
                                             key={transaction.id}
-                                            className="group border-b border-slate-100 last:border-b-0 transition hover:bg-slate-50/50"
+                                            className="group border-b border-slate-100 dark:border-slate-800/60 last:border-b-0 transition hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
                                         >
 
                                             {/* Number */}
-                                            <td className="px-5 py-4 text-sm font-medium text-slate-400">
+                                            <td className="px-5 py-4 text-sm font-medium text-slate-400 dark:text-slate-500">
                                                 {transaction.id}
                                             </td>
 
                                             {/* Date */}
-                                            <td className="whitespace-nowrap px-4 py-4 text-sm font-medium text-slate-700">
+                                            <td className="whitespace-nowrap px-4 py-4 text-sm font-medium text-slate-700 dark:text-slate-300">
                                                 {formatDate(transaction.date)}
                                             </td>
 
@@ -154,8 +154,8 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                             <td className="px-4 py-4">
                                                 <span
                                                     className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${isCredit
-                                                            ? "bg-emerald-50 text-emerald-600"
-                                                            : "bg-rose-50 text-rose-500"
+                                                            ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60"
+                                                            : "bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60"
                                                         }`}
                                                 >
                                                     {isCredit ? (
@@ -177,35 +177,35 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                             {/* Amount */}
                                             <td
                                                 className={`px-4 py-4 text-right font-semibold tabular-nums ${isCredit
-                                                        ? "text-emerald-600"
-                                                        : "text-rose-500"
+                                                        ? "text-emerald-600 dark:text-emerald-400"
+                                                        : "text-rose-500 dark:text-rose-400"
                                                     }`}
                                             >
                                                 Rp {formatIDR(transaction.amount)}
                                             </td>
 
                                             {/* Description / Customer */}
-                                            <td className="px-4 py-4 text-sm text-slate-600">
+                                            <td className="px-4 py-4 text-sm text-slate-600 dark:text-slate-300">
                                                 {transaction.customer || transaction.description}
                                             </td>
 
                                             {/* Source */}
-                                            <td className="px-4 py-4 text-sm font-medium text-slate-600">
+                                            <td className="px-4 py-4 text-sm font-medium text-slate-600 dark:text-slate-400">
                                                 {transaction.source}
                                             </td>
 
                                             {/* Reference */}
                                             <td className="px-4 py-4">
-                                                <span className="font-mono text-xs font-medium text-slate-500">
+                                                <span className="font-mono text-xs font-medium text-slate-500 dark:text-slate-400">
                                                     {transaction.reference}
                                                 </span>
 
                                                 {transactionNotes[transaction.id] && (
                                                     <p
-                                                        className="mt-1 max-w-[180px] truncate text-xs text-slate-400"
+                                                        className="mt-1 max-w-[180px] truncate text-xs text-slate-400 dark:text-slate-500"
                                                         title={transactionNotes[transaction.id]}
                                                     >
-                                                        <span className="font-medium text-slate-500">
+                                                        <span className="font-medium text-slate-500 dark:text-slate-400">
                                                             Note:
                                                         </span>{" "}
                                                         {transactionNotes[transaction.id]}
@@ -214,7 +214,7 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                             </td>
 
                                             {/* Balance */}
-                                            <td className="px-4 py-4 text-right font-semibold tabular-nums text-slate-700">
+                                            <td className="px-4 py-4 text-right font-semibold tabular-nums text-slate-700 dark:text-slate-200">
                                                 Rp {formatIDR(transaction.balance)}
                                             </td>
 
@@ -231,13 +231,13 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                                                 : transaction.id
                                                         )
                                                     }
-                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                                                    className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 dark:text-slate-400 transition hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"
                                                 >
                                                     <MoreHorizontal size={18} />
                                                 </button>
 
                                                 {activeMenu === transaction.id && (
-                                                    <div className="absolute right-4 top-12 z-30 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white p-1.5 text-left shadow-lg shadow-slate-200/50">
+                                                    <div className="absolute right-4 top-12 z-30 w-44 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 text-left shadow-lg dark:shadow-none">
 
                                                         <button
                                                             type="button"
@@ -246,11 +246,11 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                                                     transaction
                                                                 )
                                                             }
-                                                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                                                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800"
                                                         >
                                                             <StickyNote
                                                                 size={16}
-                                                                className="text-indigo-500"
+                                                                className="text-indigo-500 dark:text-indigo-400"
                                                             />
 
                                                             Add Note
@@ -272,7 +272,7 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
                 {/* ================= MOBILE ================= */}
                 {!isLoading && !error && transactions.length > 0 && (
-                    <div className="divide-y divide-slate-100 md:hidden">
+                    <div className="divide-y divide-slate-100 dark:divide-slate-800 md:hidden">
 
                         {transactions.map((transaction) => {
                             const isCredit =
@@ -289,27 +289,27 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                         <div>
 
                                             <div className="mb-2 flex items-center gap-2">
-                                                <span className="text-xs text-slate-400">
+                                                <span className="text-xs text-slate-400 dark:text-slate-500">
                                                     #{transaction.id}
                                                 </span>
 
-                                                <span className="text-sm font-medium text-slate-700">
+                                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                                     {formatDate(transaction.date)}
                                                 </span>
                                             </div>
 
-                                            <p className="text-sm font-medium text-slate-800">
+                                            <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                                                 {transaction.customer || transaction.description}
                                             </p>
 
-                                            <p className="mt-1 text-xs text-slate-400">
+                                            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                                                 {transaction.source} ·{" "}
                                                 {transaction.reference}
                                             </p>
 
                                             {transactionNotes[transaction.id] && (
                                                 <p
-                                                    className="mt-2 max-w-[240px] truncate text-xs text-slate-500"
+                                                    className="mt-2 max-w-[240px] truncate text-xs text-slate-500 dark:text-slate-400"
                                                     title={transactionNotes[transaction.id]}
                                                 >
                                                     <span className="font-medium">
@@ -334,13 +334,13 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                                             : transaction.id
                                                     )
                                                 }
-                                                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100"
+                                                className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                                             >
                                                 <MoreHorizontal size={18} />
                                             </button>
 
                                             {activeMenu === transaction.id && (
-                                                <div className="absolute right-0 top-9 z-20 w-40 rounded-xl border border-slate-200 bg-white p-1.5 shadow-lg">
+                                                <div className="absolute right-0 top-9 z-20 w-40 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-1.5 shadow-lg dark:shadow-none">
 
                                                     <button
                                                         type="button"
@@ -349,11 +349,11 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                                                 transaction
                                                             )
                                                         }
-                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-slate-700 hover:bg-slate-50"
+                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
                                                     >
                                                         <StickyNote
                                                             size={16}
-                                                            className="text-indigo-500"
+                                                            className="text-indigo-500 dark:text-indigo-400"
                                                         />
 
                                                         Add Note
@@ -371,8 +371,8 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
                                         <span
                                             className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${isCredit
-                                                    ? "bg-emerald-50 text-emerald-600"
-                                                    : "bg-rose-50 text-rose-500"
+                                                    ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60"
+                                                    : "bg-rose-50 dark:bg-rose-950/60 text-rose-500 dark:text-rose-400 border border-rose-200 dark:border-rose-800/60"
                                                 }`}
                                         >
                                             {isCredit ? (
@@ -388,14 +388,14 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
                                             <p
                                                 className={`text-base font-semibold tabular-nums ${isCredit
-                                                        ? "text-emerald-600"
-                                                        : "text-rose-500"
+                                                        ? "text-emerald-600 dark:text-emerald-400"
+                                                        : "text-rose-500 dark:text-rose-400"
                                                     }`}
                                             >
                                                 Rp {formatIDR(transaction.amount)}
                                             </p>
 
-                                            <p className="mt-1 text-xs text-slate-400">
+                                            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
                                                 Balance: Rp {formatIDR(transaction.balance)}
                                             </p>
 
@@ -412,9 +412,9 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
                 {/* ================= FOOTER ================= */}
                 {!isLoading && !error && transactions.length > 0 && (
-                    <div className="flex flex-col gap-3 border-t border-slate-200 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex flex-col gap-3 border-t border-slate-200 dark:border-slate-800 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
 
-                        <p className="text-xs font-medium text-slate-400">
+                        <p className="text-xs font-medium text-slate-400 dark:text-slate-500">
                             Showing 1 to {transactions.length} of{" "}
                             {transactions.length} transactions
                         </p>
@@ -423,21 +423,21 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
 
                             <button
                                 type="button"
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition hover:bg-slate-50"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                             >
                                 <ChevronLeft size={16} />
                             </button>
 
                             <button
                                 type="button"
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-200 bg-indigo-50 text-sm font-semibold text-indigo-600"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-indigo-200 dark:border-indigo-800 bg-indigo-50 dark:bg-indigo-950/60 text-sm font-semibold text-indigo-600 dark:text-indigo-400"
                             >
                                 1
                             </button>
 
                             <button
                                 type="button"
-                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-400 transition hover:bg-slate-50"
+                                className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition"
                             >
                                 <ChevronRight size={16} />
                             </button>

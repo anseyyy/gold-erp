@@ -23,28 +23,28 @@ export default function RecentTransactions() {
 
   return (
     <Card header="Recent Activity Transactions">
-      <div className="w-full bg-white rounded-lg border border-[#E8EAF0] overflow-hidden shadow-2xs">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-lg border border-[#E8EAF0] dark:border-slate-800 overflow-hidden shadow-2xs transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/70 border-b border-[#E8EAF0]">
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Transaction</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Account</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Type</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Amount</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Date</th>
+              <tr className="bg-slate-50/70 dark:bg-slate-800/60 border-b border-[#E8EAF0] dark:border-slate-800">
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Transaction</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Account</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Type</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Amount</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E8EAF0]">
+            <tbody className="divide-y divide-[#E8EAF0] dark:divide-slate-800">
               {staticTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-4 py-3.5 text-xs font-extrabold text-slate-900">{tx.transaction}</td>
-                  <td className="px-4 py-3.5 text-xs font-medium text-slate-500">{tx.account}</td>
+                <tr key={tx.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                  <td className="px-4 py-3.5 text-xs font-extrabold text-slate-900 dark:text-slate-100">{tx.transaction}</td>
+                  <td className="px-4 py-3.5 text-xs font-medium text-slate-500 dark:text-slate-400">{tx.account}</td>
                   <td className="px-4 py-3.5 text-xs font-medium">
                     <Badge variant={variants[tx.type] || 'slate'} className="text-[10px] font-bold px-2 py-0.5">{tx.type}</Badge>
                   </td>
-                  <td className="px-4 py-3.5 text-xs font-mono font-bold text-slate-900">{tx.amount}</td>
-                  <td className="px-4 py-3.5 text-xs font-medium text-slate-400">{tx.date}</td>
+                  <td className="px-4 py-3.5 text-xs font-mono font-bold text-slate-900 dark:text-slate-100">{tx.amount}</td>
+                  <td className="px-4 py-3.5 text-xs font-medium text-slate-400 dark:text-slate-500">{tx.date}</td>
                 </tr>
               ))}
             </tbody>

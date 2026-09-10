@@ -14,33 +14,33 @@ export default function RecentExpenses() {
 
   return (
     <Card header="Recent Operational Expenses">
-      <div className="w-full bg-white rounded-lg border border-[#E8EAF0] overflow-hidden shadow-2xs">
+      <div className="w-full bg-white dark:bg-slate-900 rounded-lg border border-[#E8EAF0] dark:border-slate-800 overflow-hidden shadow-2xs transition-colors">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-50/70 border-b border-[#E8EAF0]">
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Date</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Reason</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Description</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Currency</th>
-                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Amount</th>
+              <tr className="bg-slate-50/70 dark:bg-slate-800/60 border-b border-[#E8EAF0] dark:border-slate-800">
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Reason</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Description</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Currency</th>
+                <th className="px-4 py-3 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Amount</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#E8EAF0]">
+            <tbody className="divide-y divide-[#E8EAF0] dark:divide-slate-800">
               {staticExpenses.map((exp) => (
-                <tr key={exp.id} className="hover:bg-slate-50/50 transition-colors">
-                  <td className="px-4 py-3.5 text-xs text-slate-500 font-medium leading-tight">
+                <tr key={exp.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
+                  <td className="px-4 py-3.5 text-xs text-slate-500 dark:text-slate-400 font-medium leading-tight">
                     <div>{exp.dateMonth}</div>
-                    <div className="text-[10px] text-slate-400">{exp.dateYear}</div>
+                    <div className="text-[10px] text-slate-400 dark:text-slate-500">{exp.dateYear}</div>
                   </td>
-                  <td className="px-4 py-3.5 text-xs font-extrabold text-slate-900">{exp.reason}</td>
-                  <td className="px-4 py-3.5 text-xs font-normal text-slate-500">{exp.description}</td>
+                  <td className="px-4 py-3.5 text-xs font-extrabold text-slate-900 dark:text-slate-100">{exp.reason}</td>
+                  <td className="px-4 py-3.5 text-xs font-normal text-slate-500 dark:text-slate-400">{exp.description}</td>
                   <td className="px-4 py-3.5 text-xs font-medium">
                     <Badge variant={exp.currency === 'USDT' ? 'sky' : 'amber'} className="font-bold text-[10px] px-2 py-0.5">
                       {exp.currency}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3.5 text-xs font-extrabold text-rose-600 tracking-tight">{exp.amount}</td>
+                  <td className="px-4 py-3.5 text-xs font-extrabold text-rose-600 dark:text-rose-400 tracking-tight">{exp.amount}</td>
                 </tr>
               ))}
             </tbody>

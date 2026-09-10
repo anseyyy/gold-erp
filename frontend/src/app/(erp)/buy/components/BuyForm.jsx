@@ -4,6 +4,7 @@ import React from 'react';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import CustomerSelect from '@/components/ui/CustomerSelect';
 import Button from '@/components/ui/Button';
 import { Plus, UserPlus } from 'lucide-react';
 import { formatIDR, formatUSDT } from '@/lib/utils/formatters';
@@ -45,8 +46,8 @@ export default function BuyForm({
       header={
         <div className="flex items-center gap-20 justify-between w-full">
           <div>
-            <h3 className="font-extrabold text-sm text-slate-800">{isEditing ? 'Edit General Buy Order' : 'Record General Buy Order'}</h3>
-            <p className="text-xs text-slate-400">Complete customer gold trade entry</p>
+            <h3 className="font-extrabold text-sm text-slate-800 dark:text-slate-100">{isEditing ? 'Edit General Buy Order' : 'Record General Buy Order'}</h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500">Complete customer gold trade entry</p>
           </div>
           <div className="flex items-center gap-2">
             {isEditing && (
@@ -77,11 +78,12 @@ export default function BuyForm({
             error={errors.date}
           />
 
-          <Select
+          <CustomerSelect
             label="Customer"
             value={selectedCustomer}
-            onChange={(e) => setSelectedCustomer(e.target.value)}
-            options={customers.map((c) => ({ value: c, label: c }))}
+            onChange={setSelectedCustomer}
+            onAddCustomer={onAddCustomer}
+            error={errors.customer}
           />
 
           <Input
@@ -154,29 +156,29 @@ export default function BuyForm({
         </div>
 
         {/* Live Calculation Preview Banner */}
-        <div className="bg-indigo-50/60 border border-indigo-100 p-4 rounded-xl space-y-2">
+        <div className="bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-800/60 p-4 rounded-xl space-y-2">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
             <div>
-              <span className="text-slate-400 font-medium block">Pure Gold Weight:</span>
-              <span className="font-mono font-extrabold text-amber-700 text-sm">
+              <span className="text-slate-400 dark:text-slate-400 font-medium block">Pure Gold Weight:</span>
+              <span className="font-mono font-extrabold text-amber-700 dark:text-amber-400 text-sm">
                 {(calculatedPure || 0).toFixed(3)} g
               </span>
             </div>
             <div>
-              <span className="text-slate-400 font-medium block">Total IDR:</span>
-              <span className="font-mono font-extrabold text-indigo-700 text-sm">
+              <span className="text-slate-400 dark:text-slate-400 font-medium block">Total IDR:</span>
+              <span className="font-mono font-extrabold text-indigo-700 dark:text-indigo-400 text-sm">
                 {formatIDR(calculatedTotalIdr)}
               </span>
             </div>
             <div>
-              <span className="text-slate-400 font-medium block">Total Dollar Out:</span>
-              <span className="font-mono font-extrabold text-emerald-600 text-sm">
+              <span className="text-slate-400 dark:text-slate-400 font-medium block">Total Dollar Out:</span>
+              <span className="font-mono font-extrabold text-emerald-600 dark:text-emerald-400 text-sm">
                 {formatUSDT(calculatedTotalDollar)}
               </span>
             </div>
             <div>
-              <span className="text-slate-400 font-medium block">Balance Due ({payment}):</span>
-              <span className="font-mono font-extrabold text-slate-800 text-sm">
+              <span className="text-slate-400 dark:text-slate-400 font-medium block">Balance Due ({payment}):</span>
+              <span className="font-mono font-extrabold text-slate-800 dark:text-slate-100 text-sm">
                 {payment === 'USDT' ? formatUSDT(calculatedBalance) : formatIDR(calculatedBalance)}
               </span>
             </div>

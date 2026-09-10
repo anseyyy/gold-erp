@@ -4,6 +4,7 @@ import React from 'react';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
+import CustomerSelect from '@/components/ui/CustomerSelect';
 import Button from '@/components/ui/Button';
 import { Plus, UserPlus } from 'lucide-react';
 import { formatIDR, formatUSDT } from '@/lib/utils/formatters';
@@ -69,11 +70,12 @@ export default function BuyForm({
             error={errors.date}
           />
 
-          <Select
+          <CustomerSelect
             label="Customer"
             value={selectedCustomer}
-            onChange={(e) => setSelectedCustomer(e.target.value)}
-            options={customers.map((c) => ({ value: c, label: c }))}
+            onChange={setSelectedCustomer}
+            onAddCustomer={onAddCustomer}
+            error={errors.customer}
           />
 
           <Input
