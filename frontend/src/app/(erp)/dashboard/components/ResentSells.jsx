@@ -41,8 +41,8 @@ export default function ResentSells({ items = [], isLoading = false }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8EAF0] dark:divide-slate-800">
-                {items.map((item) => (
-                  <tr key={item._id || item.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
+                {items.map((item, idx) => (
+                  <tr key={item._id || item.id || `sell-${idx}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50">
                     <td className="px-3 py-2.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
                       {formatDate(item.date)}
                     </td>

@@ -22,6 +22,7 @@ export default function ManualTransactionModal({
 
   useEffect(() => {
     if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setType('Credit');
       setAmount('');
       setDate(new Date().toISOString().slice(0, 10));

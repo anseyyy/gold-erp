@@ -17,6 +17,7 @@ export default function BuyPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("ALL");
+  const [selectedClientFilter, setSelectedClientFilter] = useState("ALL");
 
   // Form states
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -29,6 +30,7 @@ export default function BuyPage() {
   const [pureIdrRate, setPureIdrRate] = useState("");
   const [dollarRate, setDollarRate] = useState("");
   const [payment, setPayment] = useState("USDT");
+  const [paidAmount, setPaidAmount] = useState("");
   const [editingBuyId, setEditingBuyId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
@@ -46,8 +48,9 @@ export default function BuyPage() {
   const calculatedTotalDollar = Number(dollarRate)
     ? calculatedTotalIdr / Number(dollarRate)
     : 0;
-  const calculatedBalance =
-    payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr;
+
+  const totalOrderCost = payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr;
+  const calculatedBalance = totalOrderCost - (paidAmount !== "" ? Number(paidAmount) : totalOrderCost);
 
   const loadBuys = useCallback(async () => {
     setApiError("");
@@ -105,6 +108,17 @@ export default function BuyPage() {
       });
   }, []);
 
+  // When opening form, default selectedCustomer to selectedClientFilter if set
+  const handleToggleForm = () => {
+    setIsFormOpen((prev) => {
+      const nextState = !prev;
+      if (nextState && selectedClientFilter !== "ALL") {
+        setSelectedCustomer(selectedClientFilter);
+      }
+      return nextState;
+    });
+  };
+
   const submitBuy = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
@@ -121,7 +135,7 @@ export default function BuyPage() {
         payment,
         totalIdr: calculatedTotalIdr,
         totalDollar: calculatedTotalDollar,
-        balance: calculatedBalance,
+        paidAmount: paidAmount !== "" ? Number(paidAmount) : (payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr),
       };
       if (editingBuyId) {
         await buyApi.update(editingBuyId, payload);
@@ -137,6 +151,7 @@ export default function BuyPage() {
       setScrapRate("");
       setPureIdrRate("");
       setDollarRate("");
+      setPaidAmount("");
     } finally {
       setIsSubmitting(false);
     }
@@ -159,13 +174,14 @@ export default function BuyPage() {
     setPureIdrRate(item.pureIdrRate?.toString() || "");
     setDollarRate(item.dollarRate?.toString() || "");
     setPayment(item.payment || "USDT");
+    setPaidAmount(item.paidAmount?.toString() || "");
   };
 
   const cancelEdit = () => {
     setEditingBuyId(null);
     setIsFormOpen(false);
     setDate(new Date().toISOString().slice(0, 10));
-    setSelectedCustomer(customers[0] || "");
+    setSelectedCustomer(selectedClientFilter !== "ALL" ? selectedClientFilter : (customers[0] || ""));
     setScrap("");
     setTouch("");
     setPure("");
@@ -173,6 +189,7 @@ export default function BuyPage() {
     setPureIdrRate("");
     setDollarRate("");
     setPayment("USDT");
+    setPaidAmount("");
   };
 
   const addCustomer = async (event) => {
@@ -206,6 +223,12 @@ export default function BuyPage() {
   // Filtered dataset for BuyTable
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      if (
+        selectedClientFilter !== "ALL" &&
+        item.customer?.toLowerCase() !== selectedClientFilter.toLowerCase()
+      ) {
+        return false;
+      }
       if (paymentFilter !== "ALL" && item.payment !== paymentFilter) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -216,19 +239,28 @@ export default function BuyPage() {
       }
       return true;
     });
-  }, [items, searchQuery, paymentFilter]);
+  }, [items, searchQuery, paymentFilter, selectedClientFilter]);
+
+  // Recalculate total amount for selected client
+  const filteredTotalBuyAmount = useMemo(() => {
+    if (selectedClientFilter === "ALL") return totalBuyAmount;
+    return filteredItems.reduce((acc, curr) => acc + (Number(curr.totalIdr) || 0), 0);
+  }, [selectedClientFilter, totalBuyAmount, filteredItems]);
 
   return (
     <div className="space-y-6">
       <BuyHeader
-        totalBuyAmount={totalBuyAmount}
+        totalBuyAmount={filteredTotalBuyAmount}
         onAddCustomer={() => setIsCustomerModalOpen(true)}
         isFormOpen={isFormOpen}
-        onToggleForm={() => setIsFormOpen((prev) => !prev)}
+        onToggleForm={handleToggleForm}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         paymentFilter={paymentFilter}
         setPaymentFilter={setPaymentFilter}
+        customers={customers}
+        selectedClientFilter={selectedClientFilter}
+        setSelectedClientFilter={setSelectedClientFilter}
       />
 
       {/* Collapsible / Toggleable Buy Form */}
@@ -253,6 +285,8 @@ export default function BuyPage() {
           setDollarRate={setDollarRate}
           payment={payment}
           setPayment={setPayment}
+          paidAmount={paidAmount}
+          setPaidAmount={setPaidAmount}
           isSubmitting={isSubmitting}
           isEditing={Boolean(editingBuyId)}
           onCancelEdit={cancelEdit}

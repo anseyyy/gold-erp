@@ -18,6 +18,7 @@ export default function SellPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("ALL");
+  const [selectedClientFilter, setSelectedClientFilter] = useState("ALL");
 
   // Form states
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
@@ -29,6 +30,7 @@ export default function SellPage() {
   const [pureIdrRate, setPureIdrRate] = useState("");
   const [dollarRate, setDollarRate] = useState("");
   const [payment, setPayment] = useState("USDT");
+  const [receivedAmount, setReceivedAmount] = useState("");
   const [editingSellId, setEditingSellId] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
@@ -44,8 +46,9 @@ export default function SellPage() {
   const calculatedTotalDollar = Number(dollarRate)
     ? calculatedTotalIdr / Number(dollarRate)
     : 0;
-  const calculatedBalance =
-    payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr;
+
+  const totalOrderValue = payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr;
+  const calculatedBalance = totalOrderValue - (receivedAmount !== "" ? Number(receivedAmount) : totalOrderValue);
 
   const loadSells = useCallback(async () => {
     setApiError("");
@@ -101,11 +104,22 @@ export default function SellPage() {
       .catch(() => setApiError("Unable to load customers."));
   }, []);
 
+  // When opening form, default selectedCustomer to selectedClientFilter if set
+  const handleToggleForm = () => {
+    setIsFormOpen((prev) => {
+      const nextState = !prev;
+      if (nextState && selectedClientFilter !== "ALL") {
+        setSelectedCustomer(selectedClientFilter);
+      }
+      return nextState;
+    });
+  };
+
   const clearForm = () => {
     setEditingSellId(null);
     setIsFormOpen(false);
     setDate(new Date().toISOString().slice(0, 10));
-    setSelectedCustomer(customers[0] || "");
+    setSelectedCustomer(selectedClientFilter !== "ALL" ? selectedClientFilter : (customers[0] || ""));
     setScrap("");
     setTouch("");
     setPure("");
@@ -113,6 +127,7 @@ export default function SellPage() {
     setPureIdrRate("");
     setDollarRate("");
     setPayment("USDT");
+    setReceivedAmount("");
   };
 
   const submitSell = async (event) => {
@@ -131,7 +146,7 @@ export default function SellPage() {
         payment,
         totalIdr: calculatedTotalIdr,
         totalDollar: calculatedTotalDollar,
-        balance: calculatedBalance,
+        receivedAmount: receivedAmount !== "" ? Number(receivedAmount) : (payment === "USDT" ? calculatedTotalDollar : calculatedTotalIdr),
       };
       if (editingSellId) await sellApi.update(editingSellId, payload);
       else await sellApi.create(payload);
@@ -158,6 +173,7 @@ export default function SellPage() {
     setPureIdrRate(item.pureIdrRate?.toString() || "");
     setDollarRate(item.dollarRate?.toString() || "");
     setPayment(item.payment || "USDT");
+    setReceivedAmount(item.receivedAmount?.toString() || "");
   };
 
   const addCustomer = async (event) => {
@@ -186,6 +202,12 @@ export default function SellPage() {
   // Filtered dataset for SellTable
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
+      if (
+        selectedClientFilter !== "ALL" &&
+        item.customer?.toLowerCase() !== selectedClientFilter.toLowerCase()
+      ) {
+        return false;
+      }
       if (paymentFilter !== "ALL" && item.payment !== paymentFilter) return false;
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
@@ -196,19 +218,28 @@ export default function SellPage() {
       }
       return true;
     });
-  }, [items, searchQuery, paymentFilter]);
+  }, [items, searchQuery, paymentFilter, selectedClientFilter]);
+
+  // Recalculate total amount for selected client
+  const filteredTotalSellAmount = useMemo(() => {
+    if (selectedClientFilter === "ALL") return totalSellAmount;
+    return filteredItems.reduce((acc, curr) => acc + (Number(curr.totalIdr) || 0), 0);
+  }, [selectedClientFilter, totalSellAmount, filteredItems]);
 
   return (
     <div className="space-y-6">
       <SellHeader
-        totalSellAmount={totalSellAmount}
+        totalSellAmount={filteredTotalSellAmount}
         onAddCustomer={() => setIsCustomerModalOpen(true)}
         isFormOpen={isFormOpen}
-        onToggleForm={() => setIsFormOpen((prev) => !prev)}
+        onToggleForm={handleToggleForm}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         paymentFilter={paymentFilter}
         setPaymentFilter={setPaymentFilter}
+        customers={customers}
+        selectedClientFilter={selectedClientFilter}
+        setSelectedClientFilter={setSelectedClientFilter}
       />
 
       {/* Collapsible / Toggleable Sell Form */}
@@ -233,6 +264,8 @@ export default function SellPage() {
           setDollarRate={setDollarRate}
           payment={payment}
           setPayment={setPayment}
+          receivedAmount={receivedAmount}
+          setReceivedAmount={setReceivedAmount}
           isSubmitting={isSubmitting}
           isEditing={Boolean(editingSellId)}
           onCancelEdit={clearForm}

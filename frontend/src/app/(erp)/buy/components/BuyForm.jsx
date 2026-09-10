@@ -29,6 +29,8 @@ export default function BuyForm({
   setDollarRate = () => { },
   payment = 'USDT',
   setPayment = () => { },
+  paidAmount = '',
+  setPaidAmount = () => { },
   errors = {},
   isSubmitting = false,
   isEditing = false,
@@ -39,8 +41,11 @@ export default function BuyForm({
   calculatedPureIdrRate = 0,
   calculatedTotalIdr = 0,
   calculatedTotalDollar = 0,
-  calculatedBalance = 0,
 }) {
+  const totalCost = payment === 'USDT' ? calculatedTotalDollar : calculatedTotalIdr;
+  const effectivePaid = paidAmount !== '' ? Number(paidAmount) : totalCost;
+  const remainingBalance = totalCost - effectivePaid;
+
   return (
     <Card
       header={
@@ -153,11 +158,19 @@ export default function BuyForm({
             ]}
           />
 
+          <Input
+            label={`Paid Amount (${payment})`}
+            type="number"
+            step="any"
+            placeholder={`Defaults to total cost (${payment === 'USDT' ? '$' : 'Rp'})`}
+            value={paidAmount}
+            onChange={(e) => setPaidAmount(e.target.value)}
+          />
         </div>
 
         {/* Live Calculation Preview Banner */}
         <div className="bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-800/60 p-4 rounded-xl space-y-2">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 text-xs">
             <div>
               <span className="text-slate-400 dark:text-slate-400 font-medium block">Pure Gold Weight:</span>
               <span className="font-mono font-extrabold text-amber-700 dark:text-amber-400 text-sm">
@@ -177,9 +190,15 @@ export default function BuyForm({
               </span>
             </div>
             <div>
+              <span className="text-slate-400 dark:text-slate-400 font-medium block">Paid Amount ({payment}):</span>
+              <span className="font-mono font-extrabold text-sky-600 dark:text-sky-400 text-sm">
+                {payment === 'USDT' ? formatUSDT(effectivePaid) : formatIDR(effectivePaid)}
+              </span>
+            </div>
+            <div>
               <span className="text-slate-400 dark:text-slate-400 font-medium block">Balance Due ({payment}):</span>
-              <span className="font-mono font-extrabold text-slate-800 dark:text-slate-100 text-sm">
-                {payment === 'USDT' ? formatUSDT(calculatedBalance) : formatIDR(calculatedBalance)}
+              <span className={`font-mono font-extrabold text-sm ${remainingBalance > 0 ? 'text-rose-600 dark:text-rose-400 font-black' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                {payment === 'USDT' ? formatUSDT(remainingBalance) : formatIDR(remainingBalance)}
               </span>
             </div>
           </div>

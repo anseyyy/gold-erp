@@ -10,6 +10,7 @@ import sellRoutes from "./nonAuth/sell/sellRoutes.js";
 import usdtRoutes from "./nonAuth/usdt/usdtRoutes.js";
 import idrRoutes from "./nonAuth/idr/idrRoutes.js";
 import partnerRoutes from "./nonAuth/partner/partnerRoutes.js";
+import subAccountRoutes from "./nonAuth/subAccount/subAccountRoutes.js";
 
 const router = Router();
 
@@ -24,5 +25,7 @@ router.use("/sell", sellRoutes);
 router.use("/usdt", usdtRoutes);
 router.use("/idr", idrRoutes);
 router.use("/partners", partnerRoutes);
+router.use("/sub-accounts", subAccountRoutes);
 
 export default router;
+

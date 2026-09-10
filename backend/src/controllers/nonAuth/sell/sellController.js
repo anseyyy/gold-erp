@@ -9,7 +9,13 @@ const calculateSellValues = (data) => {
   const dollarRate = Number(data.dollarRate || 0);
   const totalDollar = dollarRate > 0 ? totalIdr / dollarRate : 0;
   const payment = data.payment || "USDT";
-  const balance = payment === "USDT" ? totalDollar : totalIdr;
+
+  const totalOrderValue = payment === "USDT" ? totalDollar : totalIdr;
+  const receivedAmount =
+    data.receivedAmount !== undefined && data.receivedAmount !== null && data.receivedAmount !== ""
+      ? Number(data.receivedAmount)
+      : totalOrderValue;
+  const balance = totalOrderValue - receivedAmount;
 
   return {
     ...data,
@@ -19,6 +25,8 @@ const calculateSellValues = (data) => {
     pureIdrRate,
     totalIdr,
     totalDollar,
+    payment,
+    receivedAmount,
     balance,
   };
 };

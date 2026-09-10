@@ -105,15 +105,13 @@ function SpreadsheetContent() {
   const loadAllData = async () => {
     setIsLoading(true);
     try {
-      const [buysRes, sellsRes, expRes, usdtRes, idrRes, podiBuyRes, podiSellRes] =
+      const [buysRes, sellsRes, expRes, usdtRes, idrRes] =
         await Promise.allSettled([
           buyApi.getAll(),
           sellApi.getAll(),
           expenseApi.getAll(),
           usdtApi.getAll(),
           idrApi.getAll(),
-          podiyanaApi.getBuy(),
-          podiyanaApi.getSell(),
         ]);
 
       const buys = buysRes.status === 'fulfilled' ? buysRes.value?.items || [] : [];
@@ -121,8 +119,6 @@ function SpreadsheetContent() {
       const expenses = expRes.status === 'fulfilled' ? expRes.value?.items || [] : [];
       const usdt = usdtRes.status === 'fulfilled' ? usdtRes.value?.items || [] : [];
       const idr = idrRes.status === 'fulfilled' ? idrRes.value?.items || [] : [];
-      const podiyanaBuys = podiBuyRes.status === 'fulfilled' ? podiBuyRes.value?.items || [] : [];
-      const podiyanaSells = podiSellRes.status === 'fulfilled' ? podiSellRes.value?.items || [] : [];
 
       setRawDataset({
         buys: buys.map((i) => ({ ...i, module: 'Buy Order', entryType: 'BUY' })),
@@ -135,8 +131,6 @@ function SpreadsheetContent() {
         })),
         usdt: usdt.map((i) => ({ ...i, module: 'USDT Account', entryType: i.type?.toUpperCase() || 'USDT' })),
         idr: idr.map((i) => ({ ...i, module: 'IDR Account', entryType: i.type?.toUpperCase() || 'IDR' })),
-        podiyanaBuys: podiyanaBuys.map((i) => ({ ...i, module: 'Podiyana Buy', entryType: 'BUY' })),
-        podiyanaSells: podiyanaSells.map((i) => ({ ...i, module: 'Podiyana Sell', entryType: 'SELL' })),
       });
     } catch (err) {
       console.error('Failed to load master spreadsheet dataset:', err);
@@ -163,7 +157,7 @@ function SpreadsheetContent() {
 
   // Combine items according to active module tab
   const activeModuleItems = useMemo(() => {
-    const { buys, sells, expenses, usdt, idr, podiyanaBuys, podiyanaSells } = rawDataset;
+    const { buys, sells, expenses, usdt, idr } = rawDataset;
     switch (activeModule) {
       case 'buy':
         return buys;
@@ -175,13 +169,9 @@ function SpreadsheetContent() {
         return usdt;
       case 'idr':
         return idr;
-      case 'podiyana-buy':
-        return podiyanaBuys;
-      case 'podiyana-sell':
-        return podiyanaSells;
       case 'all':
       default:
-        return [...buys, ...sells, ...expenses, ...podiyanaBuys, ...podiyanaSells];
+        return [...buys, ...sells, ...expenses, ...usdt, ...idr];
     }
   }, [rawDataset, activeModule]);
 
@@ -473,8 +463,6 @@ function SpreadsheetContent() {
             { id: 'expense', label: 'Expenses' },
             { id: 'usdt', label: 'USDT Account' },
             { id: 'idr', label: 'IDR Account' },
-            { id: 'podiyana-buy', label: 'Podiyana Buy' },
-            { id: 'podiyana-sell', label: 'Podiyana Sell' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -666,7 +654,7 @@ function SpreadsheetContent() {
                 const isCredit = item.entryType === 'CREDIT' || item.type === 'Credit';
                 return (
                   <tr
-                    key={item._id || item.id || idx}
+                    key={`${item.module || activeModule}-${item._id || item.id || 'row'}-${idx}`}
                     className="hover:bg-emerald-50/40 dark:hover:bg-slate-800/60 transition-colors"
                   >
                     <td className="px-2 py-2 text-center font-bold text-slate-400 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 select-none">

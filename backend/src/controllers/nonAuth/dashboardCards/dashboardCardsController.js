@@ -2,44 +2,46 @@ import DashboardCards from "../../../models/nonAuth/dashboardCards/dashboardCard
 import Sell from "../../../models/nonAuth/sell/sellModel.js";
 import Buy from "../../../models/nonAuth/buy/buyModel.js";
 import Expense from "../../../models/nonAuth/expense/expenseModel.js";
+import SubAccountBuy from "../../../models/nonAuth/subAccount/subAccountBuyModel.js";
+import SubAccountSell from "../../../models/nonAuth/subAccount/subAccountSellModel.js";
 
 export const getDashboardCardsData = async (_req, res) => {
   try {
     const now = new Date();
-
-    // Fetch transactions filtering by USDT currency/payment to prevent IDR amounts from leaking into USDT metrics
-    const [usdtSells, usdtBuys, usdtExpenses] = await Promise.all([
-      Sell.find({ payment: { $regex: /^usdt$/i } }).lean(),
-      Buy.find({ payment: { $regex: /^usdt$/i } }).lean(),
-      Expense.find({
-        $or: [
-          { currency: { $regex: /^usdt$/i } },
-          { currency: { $exists: false } },
-          { currency: null },
-          { currency: "" },
-        ],
-      }).lean(),
-    ]);
+    const todayStr = now.toISOString().slice(0, 10);
+    const localTodayStr = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+      .toISOString()
+      .slice(0, 10);
 
     const isToday = (dateVal) => {
       if (!dateVal) return false;
+      if (typeof dateVal === "string") {
+        const dStr = dateVal.slice(0, 10);
+        if (dStr === todayStr || dStr === localTodayStr) return true;
+      }
       const d = new Date(dateVal);
       if (isNaN(d.getTime())) return false;
-      return (
-        (d.getUTCFullYear() === now.getUTCFullYear() &&
-          d.getUTCMonth() === now.getUTCMonth() &&
-          d.getUTCDate() === now.getUTCDate()) ||
-        (d.getFullYear() === now.getFullYear() &&
-          d.getMonth() === now.getMonth() &&
-          d.getDate() === now.getDate())
-      );
+      const dIso = d.toISOString().slice(0, 10);
+      return dIso === todayStr || dIso === localTodayStr;
     };
 
-    // Filter today's USDT transactions
-    const todaySells = usdtSells.filter(
+    // Fetch all transactions from Buy, Sell, SubAccountBuy, SubAccountSell, and Expense
+    const [rawBuys, rawSells, subBuys, subSells, usdtExpenses] = await Promise.all([
+      Buy.find().lean(),
+      Sell.find().lean(),
+      SubAccountBuy.find().lean(),
+      SubAccountSell.find().lean(),
+      Expense.find().lean(),
+    ]);
+
+    const allSells = [...rawSells, ...subSells];
+    const allBuys = [...rawBuys, ...subBuys];
+
+    // Filter today's transactions
+    const todaySells = allSells.filter(
       (item) => isToday(item.date) || isToday(item.createdAt)
     );
-    const todayBuys = usdtBuys.filter(
+    const todayBuys = allBuys.filter(
       (item) => isToday(item.date) || isToday(item.createdAt)
     );
     const todayExpenses = usdtExpenses.filter(
@@ -48,11 +50,11 @@ export const getDashboardCardsData = async (_req, res) => {
 
     // Today's metrics (in USDT)
     const todaySalesUsdt = todaySells.reduce(
-      (sum, item) => sum + Number(item.totalDollar || 0),
+      (sum, item) => sum + Number(item.totalDollar || (item.dollarRate > 0 ? item.totalIdr / item.dollarRate : 0)),
       0
     );
     const todayBuyUsdt = todayBuys.reduce(
-      (sum, item) => sum + Number(item.totalDollar || 0),
+      (sum, item) => sum + Number(item.totalDollar || (item.dollarRate > 0 ? item.totalIdr / item.dollarRate : 0)),
       0
     );
     const todayExpenseUsdt = todayExpenses.reduce(
@@ -62,12 +64,12 @@ export const getDashboardCardsData = async (_req, res) => {
     const todayProfit = todaySalesUsdt - todayBuyUsdt;
 
     // All-time metrics (in USDT)
-    const totalSalesUsdt = usdtSells.reduce(
-      (sum, item) => sum + Number(item.totalDollar || 0),
+    const totalSalesUsdt = allSells.reduce(
+      (sum, item) => sum + Number(item.totalDollar || (item.dollarRate > 0 ? item.totalIdr / item.dollarRate : 0)),
       0
     );
-    const totalBuyUsdt = usdtBuys.reduce(
-      (sum, item) => sum + Number(item.totalDollar || 0),
+    const totalBuyUsdt = allBuys.reduce(
+      (sum, item) => sum + Number(item.totalDollar || (item.dollarRate > 0 ? item.totalIdr / item.dollarRate : 0)),
       0
     );
     const totalExpense = usdtExpenses.reduce(
@@ -78,19 +80,16 @@ export const getDashboardCardsData = async (_req, res) => {
     const totalProfit = totalSalesUsdt - totalBuyUsdt;
     const totalUsdtBalance = totalProfit - totalExpense;
 
-    // Save snapshot in DashboardCards model
-    const cardsSnapshot = await DashboardCards.create({
-      date: now,
-      todaySalesUsdt,
-      todaySalesIdr: 0,
-      todayProfit,
-      todayBuyAmount: todayBuyUsdt,
-      todayExpenseAmount: todayExpenseUsdt,
-      totalUsdtBalance,
-      totalProfit,
-      totalExpense,
-      lastCalculatedAt: now,
-    });
+    // Gold Stock Metrics (in grams)
+    const totalPureGoldBought = allBuys.reduce(
+      (sum, item) => sum + Number(item.pure || 0),
+      0
+    );
+    const totalPureGoldSold = allSells.reduce(
+      (sum, item) => sum + Number(item.pure || 0),
+      0
+    );
+    const totalGoldBalance = totalPureGoldBought - totalPureGoldSold;
 
     return res.status(200).json({
       success: true,
@@ -99,11 +98,15 @@ export const getDashboardCardsData = async (_req, res) => {
       todayProfit,
       todayBuyUsdt,
       todayExpenseUsdt,
+      totalSalesUsdt,
+      totalBuyUsdt,
       totalUsdtBalance,
       totalProfit,
       totalExpense,
-      snapshotId: cardsSnapshot._id,
-      lastCalculatedAt: cardsSnapshot.lastCalculatedAt,
+      totalPureGoldBought,
+      totalPureGoldSold,
+      totalGoldBalance,
+      lastCalculatedAt: now,
     });
   } catch (error) {
     console.error("Error in getDashboardCardsData:", error);

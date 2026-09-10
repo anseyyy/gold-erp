@@ -20,20 +20,43 @@ const ROLE_PERMISSIONS = {
     "sell.view",
     "sell.create",
     "sell.delete",
-    "podiyana.view",
-    "podiyana.create",
-    "podiyana.delete",
-    "pudiyana.view",
-    "pudiyana.create",
-    "pudiyana.delete",
+    "subaccounts.view",
+    "subaccounts.create",
+    "subaccounts.delete",
     "idr.view",
     "idr.create",
     "idr.delete",
     "calculator.view",
     "partners.view",
     "partners.manage",
+    "admin.register",
   ],
-  employee: [
+  admin: [
+    "dashboard.view",
+    "usdt.view",
+    "usdt.create",
+    "usdt.delete",
+    "expense.view",
+    "expense.create",
+    "expense.delete",
+    "buy.view",
+    "buy.create",
+    "buy.delete",
+    "sell.view",
+    "sell.create",
+    "sell.delete",
+    "subaccounts.view",
+    "subaccounts.create",
+    "subaccounts.delete",
+    "idr.view",
+    "idr.create",
+    "idr.delete",
+    "calculator.view",
+    "partners.view",
+    "partners.manage",
+    "admin.register",
+  ],
+  staff: [
     "dashboard.view",
     "usdt.view",
     "usdt.create",
@@ -43,12 +66,21 @@ const ROLE_PERMISSIONS = {
     "buy.create",
     "sell.view",
     "sell.create",
-    "podiyana.view",
-    "podiyana.create",
-    "pudiyana.view",
-    "pudiyana.create",
+    "subaccounts.view",
+    "subaccounts.create",
     "idr.view",
     "idr.create",
+    "calculator.view",
+    "partners.view",
+  ],
+  viewer: [
+    "dashboard.view",
+    "usdt.view",
+    "expense.view",
+    "buy.view",
+    "sell.view",
+    "subaccounts.view",
+    "idr.view",
     "calculator.view",
     "partners.view",
   ],
@@ -57,15 +89,14 @@ const ROLE_PERMISSIONS = {
 export function can(user, permission) {
   if (!user) return false;
 
-  const role = user.role || "employee";
+  const role = user.role || "staff";
 
-  if (role === "owner") return true;
+  if (role === "owner" || role === "admin") return true;
 
-  // Custom user permissions override if present
   if (Array.isArray(user.permissions)) {
     return user.permissions.includes(permission);
   }
 
-  const allowed = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.employee;
+  const allowed = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.staff;
   return allowed.includes(permission);
 }

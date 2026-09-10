@@ -31,7 +31,31 @@ export default function SellTable({ items = [], isLoading = false, canEdit = fal
         { header: 'Dollar Rate', accessorKey: 'dollarRate', cell: (row) => <span className="font-mono text-slate-600 dark:text-slate-400 text-xs">{formatIDR(row.dollarRate || 0)} / USD</span> },
         { header: 'Total IDR', accessorKey: 'totalIdr', cell: (row) => <span className="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-xs">{formatIDR(row.totalIdr || 0)}</span> },
         { header: 'Total Dollar ($)', accessorKey: 'totalDollar', cell: (row) => <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-xs">{formatUSDT(row.totalDollar || 0)}</span> },
-        { header: 'Balance', accessorKey: 'balance', cell: (row) => <span className="font-mono font-bold text-slate-800 dark:text-slate-100 text-xs">{row.payment === 'USDT' ? formatUSDT(row.balance || 0) : formatIDR(row.balance || 0)}</span> },
+        {
+          header: 'Received Amount',
+          accessorKey: 'receivedAmount',
+          cell: (row) => {
+            const total = row.payment === 'USDT' ? (row.totalDollar || 0) : (row.totalIdr || 0);
+            const rcvd = row.receivedAmount !== undefined ? row.receivedAmount : total;
+            return (
+              <span className="font-mono font-bold text-sky-600 dark:text-sky-400 text-xs">
+                {row.payment === 'USDT' ? formatUSDT(rcvd) : formatIDR(rcvd)}
+              </span>
+            );
+          },
+        },
+        {
+          header: 'Balance To Get',
+          accessorKey: 'balance',
+          cell: (row) => {
+            const bal = row.balance !== undefined ? row.balance : 0;
+            return (
+              <span className={`font-mono font-bold text-xs ${bal > 0 ? 'text-amber-600 dark:text-amber-400 font-extrabold' : 'text-emerald-600 dark:text-emerald-400'}`}>
+                {row.payment === 'USDT' ? formatUSDT(bal) : formatIDR(bal)}
+              </span>
+            );
+          },
+        },
         { header: 'Payment', accessorKey: 'payment', cell: (row) => <Badge variant={row.payment === 'USDT' ? 'sky' : 'amber'}>{row.payment || 'USDT'}</Badge> },
         {
             header: 'Action', accessorKey: 'id', align: 'right', cell: (row) => canEdit || canDelete ? <div className="flex items-center justify-end gap-1">

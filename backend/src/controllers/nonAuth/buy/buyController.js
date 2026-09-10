@@ -13,7 +13,24 @@ const calculateBuyValues = (data) => {
   const dollarRate = Number(data.dollarRate || 0);
   const totalDollar = dollarRate > 0 ? totalIdr / dollarRate : 0;
 
-  return { ...data, scrap, touch, pure, pureIdrRate, totalIdr, totalDollar };
+  const totalOrderCost = data.payment === "USDT" ? totalDollar : totalIdr;
+  const paidAmount =
+    data.paidAmount !== undefined && data.paidAmount !== null && data.paidAmount !== ""
+      ? Number(data.paidAmount)
+      : totalOrderCost;
+  const balance = totalOrderCost - paidAmount;
+
+  return {
+    ...data,
+    scrap,
+    touch,
+    pure,
+    pureIdrRate,
+    totalIdr,
+    totalDollar,
+    paidAmount,
+    balance,
+  };
 };
 
 export const getBuys = async (_req, res) => {

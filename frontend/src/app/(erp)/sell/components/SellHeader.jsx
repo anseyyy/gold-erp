@@ -4,7 +4,7 @@ import React from 'react';
 import Button from '@/components/ui/Button';
 import SummaryCard from '@/components/dashboard/SummaryCard';
 import Link from 'next/link';
-import { ShoppingBag, UserPlus, Plus, Search, Filter, ChevronUp, FileSpreadsheet } from 'lucide-react';
+import { ShoppingBag, UserPlus, Plus, Search, Filter, ChevronUp, FileSpreadsheet, User, X } from 'lucide-react';
 import { formatIDR } from '@/lib/utils/formatters';
 
 export default function SellHeader({
@@ -16,6 +16,9 @@ export default function SellHeader({
   setSearchQuery,
   paymentFilter = 'ALL',
   setPaymentFilter,
+  customers = [],
+  selectedClientFilter = 'ALL',
+  setSelectedClientFilter,
 }) {
   return (
     <div className="space-y-4">
@@ -69,9 +72,9 @@ export default function SellHeader({
       {/* Summary Metric Card */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <SummaryCard
-          title="Total Sell Amount"
+          title={selectedClientFilter !== 'ALL' ? `Total Sell Amount (${selectedClientFilter})` : "Total Sell Amount"}
           value={formatIDR(totalSellAmount)}
-          subtitle="Cumulative sell total value (IDR)"
+          subtitle={selectedClientFilter !== 'ALL' ? `Filtered sell total for ${selectedClientFilter}` : "Cumulative sell total value (IDR)"}
           icon={ShoppingBag}
           variant="emerald"
         />
@@ -90,19 +93,51 @@ export default function SellHeader({
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-          <select
-            value={paymentFilter}
-            onChange={(e) => setPaymentFilter?.(e.target.value)}
-            className="w-full sm:w-auto text-xs bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 font-medium text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          >
-            <option value="ALL">All Payment Methods</option>
-            <option value="USDT">USDT Only</option>
-            <option value="IDR">IDR Only</option>
-          </select>
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto shrink-0">
+          {/* Select Client Dropdown */}
+          <div className="flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 rounded-lg px-3 py-1.5 text-xs font-semibold">
+            <User className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+            <span className="text-slate-500 dark:text-slate-400 hidden sm:inline">Client:</span>
+            <select
+              value={selectedClientFilter}
+              onChange={(e) => setSelectedClientFilter?.(e.target.value)}
+              className="bg-transparent text-xs font-bold text-emerald-900 dark:text-emerald-200 focus:outline-none cursor-pointer max-w-[160px] truncate"
+            >
+              <option value="ALL">All Clients</option>
+              {customers.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
+
+            {selectedClientFilter !== 'ALL' && (
+              <button
+                type="button"
+                onClick={() => setSelectedClientFilter?.('ALL')}
+                className="ml-1 p-0.5 hover:bg-emerald-200 dark:hover:bg-emerald-900 rounded text-emerald-700 dark:text-emerald-300"
+                title="Clear Client Filter"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs">
+            <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+            <select
+              value={paymentFilter}
+              onChange={(e) => setPaymentFilter?.(e.target.value)}
+              className="bg-transparent text-xs font-medium text-slate-900 dark:text-slate-100 focus:outline-none cursor-pointer"
+            >
+              <option value="ALL">All Payment Methods</option>
+              <option value="USDT">USDT Only</option>
+              <option value="IDR">IDR Only</option>
+            </select>
+          </div>
         </div>
       </div>
     </div>
   );
 }
+

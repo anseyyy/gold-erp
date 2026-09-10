@@ -6,9 +6,9 @@ import Badge from '@/components/ui/Badge';
 
 export default function RecentTransactions() {
   const staticTransactions = [
-    { id: 1, transaction: 'Gold Bar Procurement #892', account: 'Pudiyana Buy', type: 'Buy', amount: '$15,450.00', date: '02 Sep 2026' },
+    { id: 1, transaction: 'Gold Bar Procurement #892', account: 'Sub Account Buy', type: 'Buy', amount: '$15,450.00', date: '02 Sep 2026' },
     { id: 2, transaction: 'USDT Transfer to Partner A', account: 'USDT Account', type: 'Credit', amount: '$5,000.00', date: '02 Sep 2026' },
-    { id: 3, transaction: 'Podiyana Stock Sale #341', account: 'Podiyana Sell', type: 'Sell', amount: '$28,900.00', date: '01 Sep 2026' },
+    { id: 3, transaction: 'Gold Stock Sale #341', account: 'Sub Account Sell', type: 'Sell', amount: '$28,900.00', date: '01 Sep 2026' },
     { id: 4, transaction: 'Office Utility & Internet', account: 'General Expense', type: 'Expense', amount: '$450.00', date: '01 Sep 2026' },
     { id: 5, transaction: 'Gold Bullion Buy Order', account: 'General Buy', type: 'Buy', amount: '$12,800.00', date: '31 Aug 2026' },
   ];

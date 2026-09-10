@@ -88,13 +88,29 @@ export default function BuyTable({
       ),
     },
     {
-      header: 'Balance',
+      header: 'Paid Amount',
+      accessorKey: 'paidAmount',
+      cell: (row) => {
+        const total = row.payment === 'USDT' ? (row.totalDollar || 0) : (row.totalIdr || 0);
+        const paid = row.paidAmount !== undefined ? row.paidAmount : total;
+        return (
+          <span className="font-mono font-bold text-sky-600 dark:text-sky-400 text-xs">
+            {row.payment === 'USDT' ? formatUSDT(paid) : formatIDR(paid)}
+          </span>
+        );
+      },
+    },
+    {
+      header: 'Balance Due',
       accessorKey: 'balance',
-      cell: (row) => (
-        <span className="font-mono font-bold text-slate-800 dark:text-slate-100 text-xs">
-          {row.payment === 'USDT' ? formatUSDT(row.balance || 0) : formatIDR(row.balance || 0)}
-        </span>
-      ),
+      cell: (row) => {
+        const bal = row.balance !== undefined ? row.balance : 0;
+        return (
+          <span className={`font-mono font-bold text-xs ${bal > 0 ? 'text-rose-600 dark:text-rose-400 font-extrabold' : 'text-emerald-600 dark:text-emerald-400'}`}>
+            {row.payment === 'USDT' ? formatUSDT(bal) : formatIDR(bal)}
+          </span>
+        );
+      },
     },
     {
       header: 'Payment',

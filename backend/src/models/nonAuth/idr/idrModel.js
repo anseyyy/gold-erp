@@ -2,6 +2,8 @@ import Buy from "../buy/buyModel.js";
 import Sell from "../sell/sellModel.js";
 import Expense from "../expense/expenseModel.js";
 import ManualTransaction from "../manualTransaction/manualTransactionModel.js";
+import SubAccountBuy from "../subAccount/subAccountBuyModel.js";
+import SubAccountSell from "../subAccount/subAccountSellModel.js";
 
 const toTransaction = (item, type, source, amount, customer) => ({
   id: `${source.toUpperCase()}-${item._id}`,
@@ -18,11 +20,13 @@ const toTransaction = (item, type, source, amount, customer) => ({
 });
 
 export const getIdrLedger = async () => {
-  const [buys, sells, expenses, manuals] = await Promise.all([
+  const [buys, sells, expenses, manuals, subBuys, subSells] = await Promise.all([
     Buy.find({ payment: "IDR" }).lean(),
     Sell.find({ payment: "IDR" }).lean(),
     Expense.find({ currency: "IDR" }).lean(),
     ManualTransaction.find({ account: { $regex: /^idr$/i } }).lean(),
+    SubAccountBuy.find({ payment: "IDR" }).lean(),
+    SubAccountSell.find({ payment: "IDR" }).lean(),
   ]);
 
   const rawTransactions = [
@@ -37,6 +41,12 @@ export const getIdrLedger = async () => {
     ),
     ...manuals.map((item) =>
       toTransaction(item, item.type, item.source || "Manual", item.amount, item.customer),
+    ),
+    ...subSells.map((item) =>
+      toTransaction(item, "Credit", "SubAccount Sell", item.totalIdr),
+    ),
+    ...subBuys.map((item) =>
+      toTransaction(item, "Debit", "SubAccount Buy", item.totalIdr),
     ),
   ];
 

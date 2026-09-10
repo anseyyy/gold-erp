@@ -397,19 +397,17 @@ export async function exportFullErpWorkbook(rawDataset, periodText = 'All Time')
   workbook.creator = 'GoldStock ERP System';
   workbook.created = new Date();
 
-  const { buys, sells, expenses, usdt, idr, podiyanaBuys, podiyanaSells } = rawDataset;
+  const { buys, sells, expenses, usdt, idr } = rawDataset;
 
-  const allItems = [...buys, ...sells, ...expenses, ...podiyanaBuys, ...podiyanaSells];
+  const allItems = [...(buys || []), ...(sells || []), ...(expenses || []), ...(usdt || []), ...(idr || [])];
 
   const sheetsToCreate = [
     { name: 'All ERP Records', items: allItems, moduleName: 'All ERP Records' },
-    { name: 'Buy Orders', items: buys, moduleName: 'Buy Orders' },
-    { name: 'Sell Orders', items: sells, moduleName: 'Sell Orders' },
-    { name: 'Expenses', items: expenses, moduleName: 'Expenses' },
-    { name: 'USDT Account', items: usdt, moduleName: 'USDT Account' },
-    { name: 'IDR Account', items: idr, moduleName: 'IDR Account' },
-    { name: 'Podiyana Buy', items: podiyanaBuys, moduleName: 'Podiyana Buy' },
-    { name: 'Podiyana Sell', items: podiyanaSells, moduleName: 'Podiyana Sell' },
+    { name: 'Buy Orders', items: buys || [], moduleName: 'Buy Orders' },
+    { name: 'Sell Orders', items: sells || [], moduleName: 'Sell Orders' },
+    { name: 'Expenses', items: expenses || [], moduleName: 'Expenses' },
+    { name: 'USDT Account', items: usdt || [], moduleName: 'USDT Account' },
+    { name: 'IDR Account', items: idr || [], moduleName: 'IDR Account' },
   ];
 
   sheetsToCreate.forEach((sheet) => {

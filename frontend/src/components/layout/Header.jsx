@@ -33,6 +33,7 @@ export default function Header({ onOpenMobileMenu }) {
   // Perform customer search on typing
   useEffect(() => {
     if (!searchQuery.trim()) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCustomerResults([]);
       setIsSearchOpen(false);
       return;
@@ -146,7 +147,7 @@ export default function Header({ onOpenMobileMenu }) {
             <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
               {customerResults.length === 0 ? (
                 <div className="p-4 text-center text-slate-400 font-medium">
-                  No customer records found matching "{searchQuery}"
+                  No customer records found matching &ldquo;{searchQuery}&ldquo;
                 </div>
               ) : (
                 customerResults.map((c) => (

@@ -169,8 +169,6 @@ export default function ExcelImportModal({ isOpen, onClose, onImportSuccess, tar
                     <option value="expense">Expenses</option>
                     <option value="usdt">USDT Account</option>
                     <option value="idr">IDR Account</option>
-                    <option value="podiyana-buy">Podiyana Buy</option>
-                    <option value="podiyana-sell">Podiyana Sell</option>
                   </select>
                 </div>
 

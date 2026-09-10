@@ -12,6 +12,7 @@ export default function SummaryCard({
   trend,
   trendLabel = 'vs last month',
   variant = 'indigo',
+  onClick,
 }) {
   const iconVariants = {
     indigo: 'bg-indigo-50/80 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border-indigo-100 dark:border-indigo-800/60',
@@ -25,7 +26,14 @@ export default function SummaryCard({
   const isPositive = trend !== undefined && trend >= 0;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-[#E8EAF0] dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-[0_2px_4px_rgba(15,23,42,0.02)] flex flex-col justify-between space-y-4 hover:border-slate-300 dark:hover:border-slate-700 transition-all">
+    <div
+      onClick={onClick}
+      className={`bg-white dark:bg-slate-900 border border-[#E8EAF0] dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-[0_2px_4px_rgba(15,23,42,0.02)] flex flex-col justify-between space-y-4 transition-all ${
+        onClick
+          ? 'cursor-pointer hover:border-indigo-400 dark:hover:border-indigo-600 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0'
+          : 'hover:border-slate-300 dark:hover:border-slate-700'
+      }`}
+    >
       {/* Top Header */}
       <div className="flex items-start justify-between gap-2">
         <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest leading-tight">

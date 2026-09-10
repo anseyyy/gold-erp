@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -10,30 +10,19 @@ import {
   ShoppingBag,
   TrendingUp,
   FileSpreadsheet,
-  Layers,
+  FolderKanban,
   Calculator,
   Users,
-  ChevronDown,
-  ChevronRight,
   LogOut,
   Coins,
   ShieldCheck,
+  UserPlus,
 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Sidebar({ className = '' }) {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-
-  const isPodiyanaActive = pathname?.startsWith('/podiyana');
-
-  const [podiyanaOpen, setPodiyanaOpen] = useState(isPodiyanaActive);
-
-  useEffect(() => {
-    queueMicrotask(() => {
-      if (isPodiyanaActive) setPodiyanaOpen(true);
-    });
-  }, [pathname, isPodiyanaActive]);
 
   const overviewNav = [
     { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -43,9 +32,8 @@ export default function Sidebar({ className = '' }) {
     { label: 'Sell', href: '/sell', icon: TrendingUp },
   ];
 
-  const podiyanaNav = [
-    { label: 'Buy (Podi)', href: '/podiyana/buy' },
-    { label: 'Sell (Podi)', href: '/podiyana/sell' },
+  const subAccountsNav = [
+    { label: 'Sub Accounts', href: '/sub-accounts', icon: FolderKanban },
   ];
 
   const toolsNav = [
@@ -55,7 +43,11 @@ export default function Sidebar({ className = '' }) {
     { label: 'Partners Account', href: '/partners', icon: Users },
   ];
 
-  const isLinkActive = (href) => pathname === href;
+  const adminNav = [
+    { label: 'Register User', href: '/register', icon: UserPlus },
+  ];
+
+  const isLinkActive = (href) => pathname === href || (href !== '/dashboard' && pathname?.startsWith(href));
 
   return (
     <aside
@@ -101,50 +93,30 @@ export default function Sidebar({ className = '' }) {
             </nav>
           </div>
 
-          {/* PODIYANA SUB-SYSTEM DROPDOWN */}
+          {/* SUB ACCOUNTS SECTION */}
           <div>
             <p className="px-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
-              Podiyana Core
+              Sub Accounts
             </p>
-            <div className="space-y-1">
-              <button
-                onClick={() => setPodiyanaOpen(!podiyanaOpen)}
-                className={`w-full flex items-center justify-between px-3 py-2 text-xs font-semibold rounded-md transition-colors ${isPodiyanaActive
-                  ? 'text-indigo-700 dark:text-indigo-300 font-bold bg-indigo-50/50 dark:bg-indigo-950/30'
-                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
-                  }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Layers className={`w-4 h-4 ${isPodiyanaActive ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`} />
-                  <span>Podiyana</span>
-                </div>
-                {podiyanaOpen ? (
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                ) : (
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                )}
-              </button>
-
-              {podiyanaOpen && (
-                <div className="pl-6 pt-1 space-y-1 border-l-2 border-indigo-100 dark:border-indigo-900 ml-4">
-                  {podiyanaNav.map((sub) => {
-                    const subActive = isLinkActive(sub.href);
-                    return (
-                      <Link
-                        key={sub.href}
-                        href={sub.href}
-                        className={`block px-3 py-1.5 text-xs rounded-md transition-colors ${subActive
-                          ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 font-bold'
-                          : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
-                          }`}
-                      >
-                        {sub.label}
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <nav className="space-y-1">
+              {subAccountsNav.map((item) => {
+                const active = isLinkActive(item.href);
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-md transition-colors ${active
+                      ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-100 dark:border-indigo-800/60'
+                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                      }`}
+                  >
+                    <Icon className={`w-4 h-4 ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
           {/* TOOLS & ACCOUNTS */}
@@ -172,6 +144,34 @@ export default function Sidebar({ className = '' }) {
               })}
             </nav>
           </div>
+
+          {/* ADMIN & MANAGEMENT (Restricted to Admin / Owner) */}
+          {(user?.role === 'admin' || user?.role === 'owner') && (
+            <div>
+              <p className="px-3 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-2">
+                Administration
+              </p>
+              <nav className="space-y-1">
+                {adminNav.map((item) => {
+                  const active = isLinkActive(item.href);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2 text-xs font-semibold rounded-md transition-colors ${active
+                        ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-bold border border-indigo-100 dark:border-indigo-800/60'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100'
+                        }`}
+                    >
+                      <Icon className={`w-4 h-4 ${active ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+          )}
         </div>
       </div>
 
@@ -202,3 +202,4 @@ export default function Sidebar({ className = '' }) {
     </aside>
   );
 }
+

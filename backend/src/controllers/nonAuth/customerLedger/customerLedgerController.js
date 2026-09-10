@@ -2,6 +2,8 @@ import CustomerLedger from "../../../models/nonAuth/customerLedger/customerLedge
 import Buy from "../../../models/nonAuth/buy/buyModel.js";
 import Sell from "../../../models/nonAuth/sell/sellModel.js";
 import Customer from "../../../models/nonAuth/customer/customerModel.js";
+import SubAccountBuy from "../../../models/nonAuth/subAccount/subAccountBuyModel.js";
+import SubAccountSell from "../../../models/nonAuth/subAccount/subAccountSellModel.js";
 
 export const getCustomerLedgerByName = async (req, res) => {
   try {
@@ -13,11 +15,16 @@ export const getCustomerLedgerByName = async (req, res) => {
     const customerName = decodeURIComponent(rawName).trim();
     const regex = new RegExp(`^${customerName.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, "i");
 
-    // Fetch all Buy and Sell records for this customer
-    const [buys, sells] = await Promise.all([
+    // Fetch all Buy, Sell, and SubAccount records for this customer
+    const [rawBuys, rawSells, subBuys, subSells] = await Promise.all([
       Buy.find({ customer: regex }).sort({ date: -1, createdAt: -1 }).lean(),
       Sell.find({ customer: regex }).sort({ date: -1, createdAt: -1 }).lean(),
+      SubAccountBuy.find({ customer: regex }).sort({ date: -1, createdAt: -1 }).lean(),
+      SubAccountSell.find({ customer: regex }).sort({ date: -1, createdAt: -1 }).lean(),
     ]);
+
+    const buys = [...rawBuys, ...subBuys.map((b) => ({ ...b, source: "SubAccount" }))];
+    const sells = [...rawSells, ...subSells.map((s) => ({ ...s, source: "SubAccount" }))];
 
     // Calculate aggregated stats
     const totalBuyOrders = buys.length;
@@ -81,17 +88,21 @@ export const getCustomerLedgerByName = async (req, res) => {
 
 export const getAllCustomerLedgers = async (_req, res) => {
   try {
-    // Get unique customer names across Customer, Buy, and Sell models
-    const [customers, buyCustomers, sellCustomers] = await Promise.all([
+    // Get unique customer names across Customer, Buy, Sell, and SubAccount models
+    const [customers, buyCustomers, sellCustomers, subBuyCusts, subSellCusts] = await Promise.all([
       Customer.find().lean(),
       Buy.distinct("customer"),
       Sell.distinct("customer"),
+      SubAccountBuy.distinct("customer"),
+      SubAccountSell.distinct("customer"),
     ]);
 
     const nameSet = new Set([
       ...customers.map((c) => c.name),
       ...buyCustomers,
       ...sellCustomers,
+      ...subBuyCusts,
+      ...subSellCusts,
     ]);
 
     const customerNames = Array.from(nameSet).filter(Boolean);
@@ -99,10 +110,15 @@ export const getAllCustomerLedgers = async (_req, res) => {
     // Fetch summaries for each customer
     const ledgers = await Promise.all(
       customerNames.map(async (name) => {
-        const [buys, sells] = await Promise.all([
+        const [rawBuys, rawSells, subBuys, subSells] = await Promise.all([
           Buy.find({ customer: name }).lean(),
           Sell.find({ customer: name }).lean(),
+          SubAccountBuy.find({ customer: name }).lean(),
+          SubAccountSell.find({ customer: name }).lean(),
         ]);
+
+        const buys = [...rawBuys, ...subBuys];
+        const sells = [...rawSells, ...subSells];
 
         const totalPureGoldBought = buys.reduce((sum, i) => sum + (Number(i.pure) || 0), 0);
         const totalPureGoldSold = sells.reduce((sum, i) => sum + (Number(i.pure) || 0), 0);
