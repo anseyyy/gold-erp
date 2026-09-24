@@ -38,10 +38,12 @@ export default function SellPage() {
 
   const calculatedPure = pure
     ? Number(pure)
-    : (Number(scrap || 0) * Number(touch || 0)) / 100;
+    : Number(scrap || 0) * Number(touch || 0);
   const calculatedPureIdrRate = pureIdrRate
     ? Number(pureIdrRate)
-    : Number(scrapRate || 0);
+    : Number(touch) > 0
+      ? Number(scrapRate || 0) / Number(touch)
+      : 0;
   const calculatedTotalIdr = calculatedPure * calculatedPureIdrRate;
   const calculatedTotalDollar = Number(dollarRate)
     ? calculatedTotalIdr / Number(dollarRate)
@@ -272,6 +274,7 @@ export default function SellPage() {
           onSubmit={submitSell}
           onAddCustomer={() => setIsCustomerModalOpen(true)}
           calculatedPure={calculatedPure}
+          calculatedPureIdrRate={calculatedPureIdrRate}
           calculatedTotalIdr={calculatedTotalIdr}
           calculatedTotalDollar={calculatedTotalDollar}
           calculatedBalance={calculatedBalance}

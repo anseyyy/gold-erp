@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { protect } from "../../../controllers/auth/authMiddleware.js";
 import {
   getSubAccounts,
   getSubAccountById,
@@ -16,6 +17,8 @@ import {
 } from "../../../controllers/nonAuth/subAccount/subAccountController.js";
 
 const router = Router();
+
+router.use(protect);
 
 // Sub account directory routes
 router.get("/", getSubAccounts);

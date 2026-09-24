@@ -38,7 +38,7 @@ export default function ExpensePage() {
       });
     } catch (error) {
       setApiError(error.response?.data?.message || "Unable to load expenses.");
-    } fontally: {
+    } finally {
       setIsLoading(false);
     }
   };

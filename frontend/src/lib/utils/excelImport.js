@@ -154,7 +154,8 @@ export async function parseExcelFile(file) {
 
     // Auto calculate pure gold if scrap & touch exist but pure is 0
     if (itemData.pure === 0 && itemData.scrap > 0 && itemData.touch > 0) {
-      itemData.pure = parseFloat(((itemData.scrap * itemData.touch) / 100).toFixed(3));
+      const pureVal = itemData.touch > 1 ? (itemData.scrap * itemData.touch) / 100 : itemData.scrap * itemData.touch;
+      itemData.pure = parseFloat(pureVal.toFixed(3));
     }
 
     // Validation checks
@@ -237,7 +238,8 @@ function parseCsvText(text) {
     });
 
     if (itemData.pure === 0 && itemData.scrap > 0 && itemData.touch > 0) {
-      itemData.pure = parseFloat(((itemData.scrap * itemData.touch) / 100).toFixed(3));
+      const pureVal = itemData.touch > 1 ? (itemData.scrap * itemData.touch) / 100 : itemData.scrap * itemData.touch;
+      itemData.pure = parseFloat(pureVal.toFixed(3));
     }
 
     parsed.push(itemData);

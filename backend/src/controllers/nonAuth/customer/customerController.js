@@ -27,6 +27,44 @@ export const createCustomer = async (req, res) => {
   }
 };
 
+export const updateCustomer = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ message: "Customer name is required" });
+    }
+    const item = await Customer.findByIdAndUpdate(
+      req.params.id,
+      { name: name.trim() },
+      { new: true, runValidators: true }
+    );
+    if (!item) return res.status(404).json({ message: "Customer not found" });
+    return res.json({ item });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(409).json({ message: "Customer name already exists" });
+    }
+    return res.status(400).json({ message: error.message });
+  }
+};
+
+export const deleteCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let item;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      item = await Customer.findByIdAndDelete(id);
+    }
+    if (!item) {
+      item = await Customer.findOneAndDelete({ name: decodeURIComponent(id) });
+    }
+    if (!item) return res.status(404).json({ message: "Customer not found" });
+    return res.json({ message: "Customer deleted successfully", item });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 export const getCustomerHistory = async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id);
@@ -42,3 +80,5 @@ export const getCustomerHistory = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
+
+

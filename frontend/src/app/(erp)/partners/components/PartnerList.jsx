@@ -4,13 +4,15 @@ import React from 'react';
 import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import PartnerForm from './PartnerForm';
-import { TrendingUp, Wallet, ArrowDownRight, ArrowUpRight } from 'lucide-react';
+import { TrendingUp, Wallet, ArrowDownRight, ArrowUpRight, Trash2 } from 'lucide-react';
 import { formatUSDT } from '@/lib/utils/formatters';
 
 export default function PartnerList({
   totalProfit = 100000,
   partners = [],
   onAddEntry,
+  onDeletePartner,
+  onDeleteEntry,
 }) {
   const partnerCount = partners.length || 1;
   const equalShare = totalProfit / partnerCount;
@@ -68,11 +70,23 @@ export default function PartnerList({
                     </div>
                   </div>
 
-                  <div className="text-right">
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase block">Remaining Net Profit</span>
-                    <span className={`font-mono text-base font-black ${netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                      {formatUSDT(netProfit)}
-                    </span>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase block">Remaining Net Profit</span>
+                      <span className={`font-mono text-base font-black ${netProfit >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                        {formatUSDT(netProfit)}
+                      </span>
+                    </div>
+                    {onDeletePartner && (
+                      <button
+                        type="button"
+                        onClick={() => onDeletePartner(partner.id, partner.name)}
+                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded-lg transition"
+                        title={`Delete partner "${partner.name}"`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 </div>
               }
@@ -97,18 +111,19 @@ export default function PartnerList({
                           <th className="px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Type</th>
                           <th className="px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">Description</th>
                           <th className="px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase text-right">Amount</th>
+                          <th className="px-3 py-2 text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase text-right w-10">Action</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-[#E8EAF0] dark:divide-slate-800">
                         {entries.length === 0 ? (
                           <tr>
-                            <td colSpan={4} className="px-3 py-4 text-center text-xs text-slate-400 dark:text-slate-500 italic">
+                            <td colSpan={5} className="px-3 py-4 text-center text-xs text-slate-400 dark:text-slate-500 italic">
                               No transactions recorded yet
                             </td>
                           </tr>
                         ) : (
                           entries.map((item, idx) => (
-                            <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
+                            <tr key={item.id || idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
                               <td className="px-3 py-2 text-xs text-slate-500 dark:text-slate-400 font-medium">{item.date}</td>
                               <td className="px-3 py-2 text-xs">
                                 <Badge
@@ -123,6 +138,18 @@ export default function PartnerList({
                                 item.type === 'Debit' ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
                               }`}>
                                 {item.type === 'Debit' ? '-' : '+'}{formatUSDT(item.amount)}
+                              </td>
+                              <td className="px-3 py-2 text-right">
+                                {onDeleteEntry && (
+                                  <button
+                                    type="button"
+                                    onClick={() => onDeleteEntry(item.id)}
+                                    className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded transition"
+                                    title="Delete entry"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
                               </td>
                             </tr>
                           ))

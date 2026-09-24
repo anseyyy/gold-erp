@@ -87,24 +87,17 @@ export default function SubAccountDetailPage() {
   }, [loadDetails]);
 
   // Rate calculations
-  const calculatedPureBuy = pure
+  const calculatedPure = pure
     ? Number(pure)
     : Number(scrap || 0) * Number(touch || 0);
-  const calculatedPureSell = pure
-    ? Number(pure)
-    : (Number(scrap || 0) * Number(touch || 0)) / 100;
-  const currentPure = activeTab === 'BUY' ? calculatedPureBuy : calculatedPureSell;
+  const currentPure = calculatedPure;
 
-  const calculatedPureIdrRateBuy = pureIdrRate
+  const calculatedPureIdrRate = pureIdrRate
     ? Number(pureIdrRate)
     : Number(touch) > 0
     ? Number(scrapRate || 0) / Number(touch)
     : 0;
-  const calculatedPureIdrRateSell = pureIdrRate
-    ? Number(pureIdrRate)
-    : Number(scrapRate || 0);
-  const currentPureIdrRate =
-    activeTab === 'BUY' ? calculatedPureIdrRateBuy : calculatedPureIdrRateSell;
+  const currentPureIdrRate = calculatedPureIdrRate;
 
   const calculatedTotalIdr = currentPure * currentPureIdrRate;
   const calculatedTotalDollar = Number(dollarRate)
@@ -421,6 +414,7 @@ export default function SubAccountDetailPage() {
             onSubmit={handleFormSubmit}
             onAddCustomer={() => {}}
             calculatedPure={currentPure}
+            calculatedPureIdrRate={currentPureIdrRate}
             calculatedTotalIdr={calculatedTotalIdr}
             calculatedTotalDollar={calculatedTotalDollar}
             calculatedBalance={calculatedBalance}

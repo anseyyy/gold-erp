@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { User, ChevronDown, Check, UserPlus } from 'lucide-react';
+import { User, ChevronDown, Check, UserPlus, Trash2 } from 'lucide-react';
 import { customerApi } from '@/lib/api';
 
 export default function CustomerSelect({
@@ -25,10 +25,20 @@ export default function CustomerSelect({
       if (Array.isArray(data)) list = data;
       else if (data?.items && Array.isArray(data.items)) list = data.items;
       
-      const names = list.map((item) => (typeof item === 'string' ? item : item.name)).filter(Boolean);
-      // Remove duplicates
-      const uniqueNames = Array.from(new Set(names));
-      setCustomers(uniqueNames);
+      const formatted = list
+        .map((item) => (typeof item === 'string' ? { id: item, name: item } : { id: item._id || item.id || item.name, name: item.name }))
+        .filter((c) => Boolean(c.name));
+      
+      // Deduplicate by name
+      const seen = new Set();
+      const unique = [];
+      for (const item of formatted) {
+        if (!seen.has(item.name.toLowerCase())) {
+          seen.add(item.name.toLowerCase());
+          unique.push(item);
+        }
+      }
+      setCustomers(unique);
     } catch (err) {
       console.warn('Failed to fetch customers list for dropdown:', err);
     }
@@ -50,8 +60,8 @@ export default function CustomerSelect({
   }, []);
 
   // Filtered customer list directly by main input value
-  const filteredCustomers = customers.filter((name) =>
-    name.toLowerCase().includes((value || '').toLowerCase())
+  const filteredCustomers = customers.filter((c) =>
+    c.name.toLowerCase().includes((value || '').toLowerCase())
   );
 
   const handleSelect = (name) => {
@@ -63,6 +73,20 @@ export default function CustomerSelect({
     const val = e.target.value;
     onChange(val);
     if (!isOpen) setIsOpen(true);
+  };
+
+  const handleDeleteCustomer = async (e, cust) => {
+    e.stopPropagation();
+    if (!confirm(`Are you sure you want to delete client "${cust.name}"?`)) return;
+    try {
+      await customerApi.delete(cust.id || cust.name);
+      if (value.toLowerCase() === cust.name.toLowerCase()) {
+        onChange('');
+      }
+      await loadCustomers();
+    } catch (err) {
+      console.error('Failed to delete customer:', err);
+    }
   };
 
   return (
@@ -129,25 +153,34 @@ export default function CustomerSelect({
                   )}
                 </div>
               ) : (
-                filteredCustomers.map((custName, idx) => {
-                  const isSelected = custName.toLowerCase() === (value || '').toLowerCase();
+                filteredCustomers.map((cust, idx) => {
+                  const isSelected = cust.name.toLowerCase() === (value || '').toLowerCase();
                   return (
-                    <button
-                      key={idx}
-                      type="button"
-                      onClick={() => handleSelect(custName)}
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-left transition ${
+                    <div
+                      key={cust.id || idx}
+                      className={`group w-full flex items-center justify-between px-3 py-2 rounded-lg transition cursor-pointer ${
                         isSelected
                           ? 'bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 font-bold'
                           : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium'
                       }`}
+                      onClick={() => handleSelect(cust.name)}
                     >
-                      <div className="flex items-center gap-2">
-                        <User className="w-3.5 h-3.5 text-indigo-500" />
-                        <span>{custName}</span>
+                      <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
+                        <User className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                        <span className="truncate">{cust.name}</span>
                       </div>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />}
-                    </button>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />}
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteCustomer(e, cust)}
+                          className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 rounded transition-all"
+                          title={`Delete client "${cust.name}"`}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
                   );
                 })
               )}

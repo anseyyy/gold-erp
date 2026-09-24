@@ -6,7 +6,7 @@ import Card from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import { formatDate, formatIDR, formatNumber } from '@/lib/utils/formatters';
-import { customerLedgerApi } from '@/lib/api';
+import { customerLedgerApi, buyApi, sellApi, customerApi } from '@/lib/api';
 import CustomerSpreadsheetModal from './CustomerSpreadsheetModal';
 import {
   User,
@@ -19,6 +19,8 @@ import {
   RefreshCw,
   Filter,
   Calendar,
+  Trash2,
+  Pencil,
 } from 'lucide-react';
 
 const formatUSD = (val = 0) =>
@@ -67,6 +69,48 @@ export default function CustomerLedgerView({ customerName }) {
       .finally(() => {
         setIsLoading(false);
       });
+  };
+
+  const handleDeleteCustomer = async () => {
+    if (!decodedName) return;
+    if (
+      !confirm(
+        `Are you sure you want to delete client "${decodedName}"? This client will be removed from your customer records.`
+      )
+    ) {
+      return;
+    }
+    try {
+      await customerApi.delete(decodedName);
+      router.push('/customer-ledger');
+    } catch (err) {
+      console.error('Failed to delete customer:', err);
+      alert(err.response?.data?.message || 'Failed to delete customer.');
+    }
+  };
+
+  const handleDeleteTransaction = async (item) => {
+    const isBuy = item.entryType === 'BUY';
+    const itemId = item._id || item.id;
+    if (!itemId) return;
+    if (
+      !confirm(
+        `Are you sure you want to delete this ${item.entryType} transaction (${formatNumber(item.pure || 0)}g pure gold)?`
+      )
+    ) {
+      return;
+    }
+    try {
+      if (isBuy) {
+        await buyApi.delete(itemId);
+      } else {
+        await sellApi.delete(itemId);
+      }
+      loadLedger();
+    } catch (err) {
+      console.error('Failed to delete transaction:', err);
+      alert(err.response?.data?.message || 'Failed to delete transaction.');
+    }
   };
 
   useEffect(() => {
@@ -195,6 +239,15 @@ export default function CustomerLedgerView({ customerName }) {
             onClick={() => router.push('/sell')}
           >
             Sell Account
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            icon={Trash2}
+            onClick={handleDeleteCustomer}
+            className="text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 border-rose-200 dark:border-rose-900/60"
+          >
+            Delete Client
           </Button>
         </div>
       </div>
@@ -424,6 +477,7 @@ export default function CustomerLedgerView({ customerName }) {
                   <th className="px-4 py-3">Payment</th>
                   <th className="px-4 py-3 text-right">Total IDR</th>
                   <th className="px-4 py-3 text-right">Total USDT</th>
+                  <th className="px-4 py-3 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#E8EAF0] dark:divide-slate-800">
@@ -462,6 +516,26 @@ export default function CustomerLedgerView({ customerName }) {
                     </td>
                     <td className="px-4 py-3 font-mono font-bold text-emerald-700 dark:text-emerald-400 text-right">
                       {formatUSD(item.totalDollar || 0)}
+                    </td>
+                    <td className="px-4 py-3 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => router.push(item.entryType === 'BUY' ? '/buy' : '/sell')}
+                          className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded-md transition-colors"
+                          title={`Go to ${item.entryType === 'BUY' ? 'Buy' : 'Sell'} page to edit`}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteTransaction(item)}
+                          className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded-md transition-colors"
+                          title="Delete transaction"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

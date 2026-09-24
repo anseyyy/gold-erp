@@ -11,8 +11,18 @@ export const partnersApi = {
     return res.data;
   },
 
+  deletePartner: async (id) => {
+    const res = await axiosInstance.delete(`/partners/${id}`);
+    return res.data;
+  },
+
   addLedgerEntry: async (data) => {
     const res = await axiosInstance.post("/partners/ledger", data);
+    return res.data;
+  },
+
+  deleteLedgerEntry: async (id) => {
+    const res = await axiosInstance.delete(`/partners/ledger/${id}`);
     return res.data;
   },
 };

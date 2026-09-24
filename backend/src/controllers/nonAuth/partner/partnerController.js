@@ -107,3 +107,26 @@ export const createPartnerLedgerEntry = async (req, res) => {
     return res.status(400).json({ message: error.message });
   }
 };
+
+export const deletePartner = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const partner = await Partner.findByIdAndDelete(id);
+    if (!partner) return res.status(404).json({ message: "Partner not found" });
+    await PartnerLedger.deleteMany({ partner: id });
+    return res.json({ message: "Partner and ledger entries deleted" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+export const deletePartnerLedgerEntry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const entry = await PartnerLedger.findByIdAndDelete(id);
+    if (!entry) return res.status(404).json({ message: "Ledger entry not found" });
+    return res.json({ message: "Ledger entry deleted" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

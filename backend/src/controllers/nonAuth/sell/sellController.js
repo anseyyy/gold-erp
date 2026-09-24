@@ -3,8 +3,12 @@ import Sell from "../../../models/nonAuth/sell/sellModel.js";
 const calculateSellValues = (data) => {
   const scrap = Number(data.scrap || 0);
   const touch = Number(data.touch || 0);
-  const pure = scrap > 0 ? (scrap * touch) / 100 : Number(data.pure || 0);
-  const pureIdrRate = Number(data.pureIdrRate || 0);
+  const pure = scrap > 0 ? scrap * touch : Number(data.pure || 0);
+  const pureIdrRate = data.scrapRate
+    ? touch > 0
+      ? Number(data.scrapRate) / touch
+      : 0
+    : Number(data.pureIdrRate || 0);
   const totalIdr = pure * pureIdrRate;
   const dollarRate = Number(data.dollarRate || 0);
   const totalDollar = dollarRate > 0 ? totalIdr / dollarRate : 0;

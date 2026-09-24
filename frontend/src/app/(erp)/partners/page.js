@@ -95,6 +95,33 @@ export default function PartnersPage() {
     }
   };
 
+  const handleDeletePartner = async (partnerId, partnerName) => {
+    if (!confirm(`Are you sure you want to delete partner "${partnerName}"? All ledger entries for this partner will also be removed.`)) return;
+    try {
+      await partnersApi.deletePartner(partnerId);
+      setIsLoading(true);
+      await loadPartners();
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message || "Unable to delete partner."
+      );
+    }
+  };
+
+  const handleDeleteEntry = async (entryId) => {
+    if (!confirm("Are you sure you want to delete this partner ledger entry?")) return;
+    try {
+      await partnersApi.deleteLedgerEntry(entryId);
+      setIsLoading(true);
+      await loadPartners();
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          "Unable to delete partner ledger entry."
+      );
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PartnerHeader
@@ -115,6 +142,8 @@ export default function PartnersPage() {
         totalProfit={account.totalBusinessProfit}
         partners={account.partners}
         onAddEntry={handleAddEntry}
+        onDeletePartner={handleDeletePartner}
+        onDeleteEntry={handleDeleteEntry}
       />
     </div>
   );

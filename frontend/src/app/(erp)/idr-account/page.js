@@ -5,7 +5,7 @@ import IdrTopCards from "./components/IdrTopCards";
 import IdrTransaction from "./components/IdrTransaction";
 import Button from "@/components/ui/Button";
 import ManualTransactionModal from "@/components/ui/ManualTransactionModal";
-import { idrApi } from "@/lib/api";
+import { idrApi, buyApi, sellApi, expenseApi } from "@/lib/api";
 import Link from "next/link";
 import { Plus, Coins, RefreshCw, FileSpreadsheet } from "lucide-react";
 
@@ -51,6 +51,33 @@ function Page() {
   const handleCreateManual = async (formData) => {
     await idrApi.createManual(formData);
     loadAccount();
+  };
+
+  const handleDeleteTransaction = async (transaction) => {
+    const id = transaction.sourceId || transaction._id || transaction.id;
+    if (!id) return;
+    if (
+      !confirm(
+        `Are you sure you want to delete this ${transaction.source || 'IDR'} transaction (${transaction.amount} IDR)?`
+      )
+    ) {
+      return;
+    }
+    try {
+      if (transaction.source === 'Manual' || !transaction.source) {
+        await idrApi.delete(id);
+      } else if (transaction.source === 'Buy') {
+        await buyApi.delete(id);
+      } else if (transaction.source === 'Sell') {
+        await sellApi.delete(id);
+      } else if (transaction.source === 'Expense') {
+        await expenseApi.delete(id);
+      }
+      loadAccount();
+    } catch (err) {
+      console.error('Failed to delete IDR transaction:', err);
+      alert(err.response?.data?.message || 'Failed to delete transaction.');
+    }
   };
 
   return (
@@ -115,6 +142,7 @@ function Page() {
         transactions={account.items}
         isLoading={isLoading}
         error={error}
+        onDelete={handleDeleteTransaction}
       />
 
       <ManualTransactionModal

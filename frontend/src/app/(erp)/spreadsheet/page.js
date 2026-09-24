@@ -32,6 +32,8 @@ import {
   DollarSign,
   Wallet,
   Sparkles,
+  Trash2,
+  Pencil,
 } from 'lucide-react';
 
 const formatUSD = (val = 0) =>
@@ -137,6 +139,41 @@ function SpreadsheetContent() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDeleteRow = async (item) => {
+    const id = item.sourceId || item._id || item.id;
+    if (!id) return;
+    const mod = item.module || '';
+    if (!confirm(`Are you sure you want to delete this ${mod} record?`)) return;
+
+    try {
+      if (mod.includes('Buy')) {
+        await buyApi.delete(id);
+      } else if (mod.includes('Sell')) {
+        await sellApi.delete(id);
+      } else if (mod.includes('Expense')) {
+        await expenseApi.delete(id);
+      } else if (mod.includes('USDT')) {
+        await usdtApi.delete(id);
+      } else if (mod.includes('IDR')) {
+        await idrApi.delete(id);
+      }
+      await loadAllData();
+    } catch (err) {
+      console.error('Failed to delete spreadsheet row:', err);
+      alert(err.response?.data?.message || 'Failed to delete entry.');
+    }
+  };
+
+  const handleEditRow = (item) => {
+    const mod = item.module || '';
+    if (mod.includes('Buy')) router.push('/buy');
+    else if (mod.includes('Sell')) router.push('/sell');
+    else if (mod.includes('Expense')) router.push('/expense');
+    else if (mod.includes('USDT')) router.push('/usdt-account');
+    else if (mod.includes('IDR')) router.push('/idr-account');
+    else router.push('/buy');
   };
 
   useEffect(() => {
@@ -630,20 +667,21 @@ function SpreadsheetContent() {
               <th className="px-3 py-2.5 border-r border-emerald-800 text-right">Pure Gold</th>
               <th className="px-3 py-2.5 text-center border-r border-emerald-800">Payment</th>
               <th className="px-3 py-2.5 text-right border-r border-emerald-800">Total IDR</th>
-              <th className="px-3 py-2.5 text-right">Total USDT</th>
+              <th className="px-3 py-2.5 text-right border-r border-emerald-800">Total USDT</th>
+              <th className="px-3 py-2.5 text-right">Action</th>
             </tr>
           </thead>
 
           <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
             {isLoading ? (
               <tr>
-                <td colSpan={10} className="p-12 text-center text-slate-400 font-sans">
+                <td colSpan={11} className="p-12 text-center text-slate-400 font-sans">
                   Loading master spreadsheet records...
                 </td>
               </tr>
             ) : filteredItems.length === 0 ? (
               <tr>
-                <td colSpan={10} className="p-12 text-center text-slate-400 font-sans">
+                <td colSpan={11} className="p-12 text-center text-slate-400 font-sans">
                   No records found matching the active filters.
                 </td>
               </tr>
@@ -696,8 +734,28 @@ function SpreadsheetContent() {
                     <td className="px-3 py-2 font-bold text-indigo-600 dark:text-indigo-400 text-right border-r border-slate-200 dark:border-slate-800">
                       {formatIDR(item.totalIdr || 0)}
                     </td>
-                    <td className="px-3 py-2 font-bold text-emerald-600 dark:text-emerald-400 text-right">
+                    <td className="px-3 py-2 font-bold text-emerald-600 dark:text-emerald-400 text-right border-r border-slate-200 dark:border-slate-800">
                       {formatUSD(item.totalDollar || item.amount || 0)}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleEditRow(item)}
+                          className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/60 rounded transition"
+                          title="Edit this entry in its account module"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteRow(item)}
+                          className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60 rounded transition"
+                          title="Delete this entry"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -723,6 +781,7 @@ function SpreadsheetContent() {
               <td className="px-3 py-3 text-right font-mono text-emerald-300 text-xs">
                 {formatUSD(totalUsdt)}
               </td>
+              <td className="px-3 py-3"></td>
             </tr>
           </tfoot>
         </table>

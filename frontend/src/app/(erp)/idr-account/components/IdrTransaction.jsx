@@ -8,6 +8,7 @@ import {
     ArrowUp,
     ArrowDown,
     StickyNote,
+    Trash2,
 } from "lucide-react";
 
 import Notemodal from "./Notemodal";
@@ -29,7 +30,7 @@ const formatIDR = (value) =>
         maximumFractionDigits: 2,
     });
 
-function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
+function IdrTransaction({ transactions = [], isLoading = false, error = "", onDelete = () => {} }) {
     const [activeMenu, setActiveMenu] = useState(null);
 
     const [noteModal, setNoteModal] = useState(null);
@@ -246,14 +247,30 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                                                     transaction
                                                                 )
                                                             }
-                                                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 transition hover:bg-slate-50 dark:hover:bg-slate-800"
                                                         >
                                                             <StickyNote
-                                                                size={16}
+                                                                size={14}
                                                                 className="text-indigo-500 dark:text-indigo-400"
                                                             />
 
                                                             Add Note
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setActiveMenu(null);
+                                                                onDelete(transaction);
+                                                            }}
+                                                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-rose-600 dark:text-rose-400 transition hover:bg-rose-50 dark:hover:bg-rose-950/60"
+                                                        >
+                                                            <Trash2
+                                                                size={14}
+                                                                className="text-rose-500 dark:text-rose-400"
+                                                            />
+
+                                                            Delete Entry
                                                         </button>
 
                                                     </div>
@@ -349,14 +366,30 @@ function IdrTransaction({ transactions = [], isLoading = false, error = "" }) {
                                                                 transaction
                                                             )
                                                         }
-                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
                                                     >
                                                         <StickyNote
-                                                            size={16}
+                                                            size={14}
                                                             className="text-indigo-500 dark:text-indigo-400"
                                                         />
 
                                                         Add Note
+                                                    </button>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setActiveMenu(null);
+                                                            onDelete(transaction);
+                                                        }}
+                                                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-xs text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/60"
+                                                    >
+                                                        <Trash2
+                                                            size={14}
+                                                            className="text-rose-500 dark:text-rose-400"
+                                                        />
+
+                                                        Delete Entry
                                                     </button>
 
                                                 </div>

@@ -11,6 +11,16 @@ export const customerApi = {
     return res.data;
   },
 
+  update: async (id, name) => {
+    const res = await axiosInstance.put(`/customer/${id}`, { name });
+    return res.data;
+  },
+
+  delete: async (id) => {
+    const res = await axiosInstance.delete(`/customer/${encodeURIComponent(id)}`);
+    return res.data;
+  },
+
   getHistory: async (id) => {
     const res = await axiosInstance.get(`/customer/${id}/history`);
     return res.data;
